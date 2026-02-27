@@ -1,8 +1,10 @@
 import ExercisePicker from "@/components/ExercisePicker";
 import ExerciseSetsReps from "@/components/ExerciseSetsReps";
+import ExerciseWeight from "@/components/ExerciseWeight";
 import { api } from "@/services/api";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ExerciseDuration from "./ExerciseDuration";
 
 type ExerciseName = {
   id: number;
@@ -19,6 +21,8 @@ export default function ExerciseForm({ onAdd, onCancel }: Props) {
   const [selectedExercise, setSelectedExercise] = useState<ExerciseName | null>(null);
   const [sets, setSets] = useState('');
   const [reps, setReps] = useState('');
+  const [weight, setWeight] = useState(123.5);
+  const [duration, setDuration] = useState(30);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,6 +70,8 @@ export default function ExerciseForm({ onAdd, onCancel }: Props) {
         onChangeSets={setSets}
         onChangeReps={setReps}
       />
+      <ExerciseWeight weight={weight} onChangeWeight={setWeight} maxWeight={500} />
+      <ExerciseDuration minutes={duration} onChangeMinutes={setDuration} />
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
           <Text style={styles.cancelText}>Cancel</Text>

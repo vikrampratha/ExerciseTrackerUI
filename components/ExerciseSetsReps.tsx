@@ -11,7 +11,7 @@ type SetsRepsProps = {
   maxReps?: number;
 };
 
-export default function SetsRepsInput({
+export default function ExerciseSetsReps({
   sets,
   reps,
   onChangeSets,

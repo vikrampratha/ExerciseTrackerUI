@@ -33,13 +33,14 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState<string>('PUSH');
     const [exercises, setExercises] = useState<Exercise[]>([]);
+    const canSubmit = exercises.length > 0;
 
     useEffect(() => {
         if (!isVisible) {
             resetState();
         }
     }, [isVisible]);
-    
+
     const resetState = () => {
         setDate(new Date());
         setType('PUSH');
@@ -51,6 +52,8 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
     };
 
     const handleSubmitWorkout = async () => {
+        if (exercises.length === 0) return;
+        
         const formattedDate = date.toLocaleDateString('en-CA');
 
         const mapExerciseToDTO = (exercise: Exercise) => ({
@@ -108,7 +111,8 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
           <Text style={styles.title}>New Workout</Text>
 
           <TouchableOpacity
-            style={[styles.circleButton, styles.confirmButton]}
+            disabled={!canSubmit}
+            style={[styles.circleButton, styles.confirmButton, !canSubmit && styles.disabledButton]}
             onPress={handleSubmitWorkout}
           >
             <MaterialIcons name="check" size={22} color="#046420" />
@@ -159,13 +163,18 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#db5d5d',
+    backgroundColor: '#999',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   confirmButton: {
-    backgroundColor: '#04e273',
+    backgroundColor: '#98efc3',
+  },
+
+  disabledButton: {
+    backgroundColor: '#999',
+    opacity: 0.6,
   },
 
   handle: {

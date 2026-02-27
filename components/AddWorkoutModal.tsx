@@ -1,7 +1,8 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import DatePicker from './DatePicker';
 
 type Props = PropsWithChildren<{
   isVisible: boolean;
@@ -9,8 +10,11 @@ type Props = PropsWithChildren<{
   onConfirm: () => void;
 }>;
 
-export default function AddWorkoutModal({ isVisible, onClose, onConfirm}: Props) {
+export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props) {
     const insets = useSafeAreaInsets();
+
+    const [date, setDate] = useState(new Date());
+
     return (
     <Modal
       visible={isVisible}
@@ -48,6 +52,10 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm}: Props)
         </View>
         {/* <View style={styles.handle} /> */}
         <Text style={styles.title}>Form goes here</Text>
+        <DatePicker
+            value={date}
+            onChange={setDate}
+        ></DatePicker>
       </View>
     </Modal>
   );

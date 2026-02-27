@@ -5,10 +5,10 @@ const onAdd = () => {
   //TODO
 };
 
-export default function AboutScreen() {
+export default function WorkoutsScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>About screen</Text>
+      <Text style={styles.text}>Workouts screen</Text>
       <View style={styles.fab}>
         <CircleButton onPress={onAdd} />
       </View>

@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 
@@ -28,11 +29,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="about"
+        name="workouts"
         options={{
-          title: 'About',
+          title: 'Workouts',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
+            <FontAwesome6 name={focused ? 'dumbbell' : 'dumbbell'} color={color} size={24}/>
           ),
         }}
       />

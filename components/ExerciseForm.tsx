@@ -6,9 +6,12 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ExerciseDuration from "./ExerciseDuration";
 
+type ExerciseType = 'STRENGTH' | 'WEIGHTED_STRENGTH' | 'CARDIO';
+
 type ExerciseName = {
   id: number;
   name: string;
+  type: ExerciseType;
 };
 
 type Props = {
@@ -19,6 +22,7 @@ type Props = {
 export default function ExerciseForm({ onAdd, onCancel }: Props) {
   const [exerciseNames, setExerciseNames] = useState<ExerciseName[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<ExerciseName | null>(null);
+  const exerciseType = selectedExercise?.type;
   const [sets, setSets] = useState('');
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState(123.5);
@@ -64,14 +68,24 @@ export default function ExerciseForm({ onAdd, onCancel }: Props) {
         selected={selectedExercise}
         onSelect={setSelectedExercise}
       />
-      <ExerciseSetsReps
-        sets={sets}
-        reps={reps}
-        onChangeSets={setSets}
-        onChangeReps={setReps}
-      />
-      <ExerciseWeight weight={weight} onChangeWeight={setWeight} maxWeight={500} />
-      <ExerciseDuration minutes={duration} onChangeMinutes={setDuration} />
+
+      {exerciseType !== 'CARDIO' && (
+        <ExerciseSetsReps
+            sets={sets}
+            reps={reps}
+            onChangeSets={setSets}
+            onChangeReps={setReps}
+        />
+      )}
+
+      {exerciseType === 'WEIGHTED_STRENGTH' && (
+        <ExerciseWeight weight={weight} onChangeWeight={setWeight} maxWeight={500} />
+      )}
+
+      {exerciseType === 'CARDIO' && (
+        <ExerciseDuration minutes={duration} onChangeMinutes={setDuration} />
+      )}
+      
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
           <Text style={styles.cancelText}>Cancel</Text>

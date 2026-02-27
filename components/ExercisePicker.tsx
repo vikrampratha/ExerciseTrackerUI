@@ -2,9 +2,12 @@ import { Feather } from '@expo/vector-icons';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, LayoutAnimation, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+type ExerciseType = 'STRENGTH' | 'WEIGHTED_STRENGTH' | 'CARDIO';
+
 type ExerciseName = {
   id: number;
   name: string;
+  type: ExerciseType;
 };
 
 type Props = {

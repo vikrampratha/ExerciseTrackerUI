@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   dateOutline: {
     borderWidth: 1,
-    borderColor: '#25292e',
+    borderColor: '#444c55',
     borderRadius: 20,
     paddingVertical: 6,
     paddingHorizontal: 12,

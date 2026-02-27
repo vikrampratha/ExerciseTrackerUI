@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     padding: 14,
     borderRadius: 12,
-    backgroundColor: '#eee',
+    backgroundColor: '#31363d',
     alignItems: 'center',
   },
   addButton: {
@@ -153,14 +153,15 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     padding: 14,
     borderRadius: 12,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#ffd33d',
     alignItems: 'center',
   },
   cancelText: {
     fontWeight: '600',
+    color: '#fff'
   },
   addText: {
-    color: '#fff',
+    color: '#31363d',
     fontWeight: '600',
   },
 });

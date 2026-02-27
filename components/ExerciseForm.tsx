@@ -1,27 +1,62 @@
-import { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import ExercisePicker from "@/components/ExercisePicker";
+import { api } from "@/services/api";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+type ExerciseName = {
+  id: number;
+  name: string;
+};
 
 type Props = {
-  onAdd: (name: string) => void;
+  onAdd: (exercise: ExerciseName) => void;
   onCancel: () => void;
 };
 
 export default function ExerciseForm({ onAdd, onCancel }: Props) {
-  const [name, setName] = useState('');
+  const [exerciseNames, setExerciseNames] = useState<ExerciseName[]>([]);
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseName | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleAdd = () => {
-    if (!name.trim()) return;
-    onAdd(name.trim());
-    setName('');
+  useEffect(() => {
+    fetchExerciseNames();
+  }, []);
+
+  const fetchExerciseNames = async () => {
+    try {
+      const response = await api.get<ExerciseName[]>('/exerciseNames');
+      setExerciseNames(response.data);
+      if (response.data.length > 0) {
+        setSelectedExercise(response.data[0]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch exercise names:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+  
+  const handleAdd = () => {
+    if (!selectedExercise) return;
+    onAdd(selectedExercise);
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <TextInput
-        placeholder="Exercise Name (e.g. Bench Press)"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
+      {/* <Text style={styles.label}>Name</Text> */}
+
+      <ExercisePicker
+        data={exerciseNames}
+        selected={selectedExercise}
+        onSelect={setSelectedExercise}
       />
 
       <View style={styles.buttonRow}>
@@ -42,17 +77,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
-  input: {
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 18,
+    marginLeft: 10,
+    color: '#fff',
+  },
+  pickerWrapper: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 12,
-    padding: 14,
-    fontSize: 16,
+    borderColor: '#ddd',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 200,
   },
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 30,
+    marginTop: 20,
   },
   cancelButton: {
     flex: 1,

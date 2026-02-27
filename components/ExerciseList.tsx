@@ -6,6 +6,12 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 type Exercise = {
   id: string;
+  exerciseNameId: number
+  name: string;
+};
+
+type ExerciseName = {
+  id: number;
   name: string;
 };
 
@@ -13,10 +19,11 @@ export default function ExerciseList() {
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [mode, setMode] = useState<'list' | 'form'>('list');
 
-    const handleAddExercise = (name: string) => {
+    const handleAddExercise = (exerciseName: ExerciseName) => {
         const newExercise: Exercise = {
             id: Date.now().toString(),
-            name,
+            exerciseNameId: exerciseName.id,
+            name: exerciseName.name,
         };
         setExercises(prev => [...prev, newExercise]);
         setMode('list');
@@ -37,7 +44,7 @@ export default function ExerciseList() {
             ) : (
                 <ExerciseForm
                     onCancel={() => setMode('list')}
-                    onAdd={handleAddExercise}
+                    onAdd={(handleAddExercise)}
                 />
             )}
             

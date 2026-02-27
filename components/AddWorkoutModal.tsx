@@ -50,8 +50,6 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
             <MaterialIcons name="check" size={22} color="#046420" />
           </TouchableOpacity>
         </View>
-        {/* <View style={styles.handle} /> */}
-        <Text style={styles.title}>Form goes here</Text>
         <DatePicker
             value={date}
             onChange={setDate}

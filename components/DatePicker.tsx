@@ -1,7 +1,7 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { PropsWithChildren, useState } from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { LayoutAnimation, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type Props = PropsWithChildren<{
   value: Date;
@@ -9,71 +9,104 @@ type Props = PropsWithChildren<{
 }>;     
 
 export default function DatePicker({ value, onChange }: Props) {
+    const today = new Date();
+    const [selectedDate, setSelectedDate] = useState(today);
+    const [isLabelPressed, setIsLabelPressed] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
 
     const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
         if (event.type === 'set' && selectedDate) {
-            onChange(selectedDate);
-
-            if (Platform.OS === 'ios') {
-                setShowPicker(false);
-            }
+            setSelectedDate(selectedDate);
         }
     };
 
+    const togglePicker = () => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setIsLabelPressed(!isLabelPressed);
+        setShowPicker(!showPicker);
+    };
+
     return (
-        <View style={styles.section}>
-        <Text style={styles.label}>Date</Text>
+    <View style={styles.container}>
+      {/* Inline Row */}
+      <View style={styles.row}>
+        <View style={styles.labelRow}>
+            <MaterialIcons name="calendar-month" color={'#ffd33d'} size={25} />
+            <Text style={styles.label}>Date</Text>
+        </View>
 
         <TouchableOpacity
-            style={styles.inputRow}
-            onPress={() => setShowPicker(!showPicker)}
-            activeOpacity={0.7}
+          style={styles.dateOutline}
+          onPress={togglePicker}
+          activeOpacity={0.8}
         >
-            <Text style={styles.dateText}>
-                {value.toLocaleDateString('en-US', {
-                    dateStyle: 'medium',
-                })}
-            </Text>
-            <MaterialIcons name="chevron-right" size={22} color="#999" />
+          <Text style={[styles.dateText, isLabelPressed ? styles.dateTextActive : styles.dateTextInactive]}>
+            {selectedDate.toLocaleDateString('en-US', { dateStyle: 'medium' })}
+          </Text>
         </TouchableOpacity>
+      </View>
 
+      {/* Inline Calendar */}
+      <View style={styles.calendarContainer}>
         {showPicker && (
             <DateTimePicker
-                value={value}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={handleChange}
-                style={{ marginTop: 10 }}
+            value={selectedDate}
+            mode="date"
+            display="inline"
+            maximumDate={today}
+            onChange={handleChange}
+            style={styles.picker}
             />
         )}
-        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  section: {
+  container: {
     marginTop: 25,
+    backgroundColor: '#31363d',
+    borderRadius: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 15,
   },
-
-  label: {
-    fontSize: 14,
-    color: '#fff',
-    marginBottom: 8,
-  },
-
-  inputRow: {
-    backgroundColor: '#25292e', // iOS grouped background
-    padding: 14,
-    borderRadius: 12,
+  row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
-  dateText: {
-    fontSize: 16,
-    fontWeight: '500',
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 18,
+    marginLeft: 10,
     color: '#fff',
+  },
+  dateOutline: {
+    borderWidth: 1,
+    borderColor: '#25292e',
+    borderRadius: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#444c55',
+  },
+  dateTextActive: {
+    color: '#ffd33d',
+  },
+  dateTextInactive: {
+    color: '#fff',
+  },
+  dateText: {
+    fontSize: 18,
+  },
+  calendarContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  picker: {
+    marginTop: 12,
   },
 });

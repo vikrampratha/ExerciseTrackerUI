@@ -8,7 +8,7 @@ type Props = {
   onChange?: (type: string) => void;
 };
 
-const options = ['push', 'pull', 'leg', 'upper', 'lower', 'full', 'cardio'];
+const options = ['PUSH', 'PULL', 'LEGS', 'UPPER_BODY', 'LOWER_BODY', 'FULL_BODY', 'CARDIO'];
 
 export default function WorkoutTypePicker({ value, onChange }: Props) {
   const [selectedType, setSelectedType] = useState(value || options[0]);

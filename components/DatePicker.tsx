@@ -17,6 +17,7 @@ export default function DatePicker({ value, onChange }: Props) {
     const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
         if (event.type === 'set' && selectedDate) {
             setSelectedDate(selectedDate);
+            if (onChange) onChange(selectedDate);
         }
     };
 

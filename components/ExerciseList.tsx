@@ -24,8 +24,12 @@ type ExerciseName = {
   type: ExerciseType;
 };
 
-export default function ExerciseList() {
-    const [exercises, setExercises] = useState<Exercise[]>([]);
+type Props = {
+  exercises: Exercise[];
+  onAddExercise: (exercise: Exercise) => void;
+};
+
+export default function ExerciseList({ exercises, onAddExercise }: Props) {
     const [mode, setMode] = useState<'list' | 'form'>('list');
 
     const handleAddExercise = (exerciseName: ExerciseName, sets: number, reps: number, weight: number, duration: number) => {
@@ -39,7 +43,7 @@ export default function ExerciseList() {
             weight: exerciseName.type === 'WEIGHTED_STRENGTH' ? weight : undefined,
             duration: exerciseName.type === 'CARDIO' ? duration : undefined,
         };
-        setExercises(prev => [...prev, newExercise]);
+        onAddExercise(newExercise);
         setMode('list');
     };
 

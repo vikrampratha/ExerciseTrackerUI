@@ -1,4 +1,5 @@
 import ExerciseCard from "@/components/ExerciseCard";
+import ExerciseForm from "@/components/ExerciseForm";
 import NewExerciseCard from "@/components/NewExerciseCard";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
@@ -10,27 +11,37 @@ type Exercise = {
 
 export default function ExerciseList() {
     const [exercises, setExercises] = useState<Exercise[]>([]);
+    const [mode, setMode] = useState<'list' | 'form'>('list');
 
-    const handleAddExercise = () => {
+    const handleAddExercise = (name: string) => {
         const newExercise: Exercise = {
             id: Date.now().toString(),
-            name: `Exercise ${exercises.length + 1}`,
+            name,
         };
         setExercises(prev => [...prev, newExercise]);
+        setMode('list');
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.label}>Exercises:</Text>
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-        {/* Existing exercises */}
-        {exercises.map(exercise => (
-            <ExerciseCard key={exercise.id} exercise={exercise} />
-        ))}
+            {mode === 'list' ? (
+                <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+                    {/* Existing exercises */}
+                    {exercises.map(exercise => (
+                        <ExerciseCard key={exercise.id} exercise={exercise} />
+                    ))}
+                    {/* NewExerciseCard */}
+                    <NewExerciseCard onPress={() => setMode('form')} />
+                </ScrollView>
+            ) : (
+                <ExerciseForm
+                    onCancel={() => setMode('list')}
+                    onAdd={handleAddExercise}
+                />
+            )}
+            
 
-        {/* NewExerciseCard */}
-        <NewExerciseCard onPress={handleAddExercise} />
-        </ScrollView>
         </View>
   );
 }

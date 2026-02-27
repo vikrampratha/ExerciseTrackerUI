@@ -23,8 +23,8 @@ export default function ExerciseForm({ onAdd, onCancel }: Props) {
   const [exerciseNames, setExerciseNames] = useState<ExerciseName[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<ExerciseName | null>(null);
   const exerciseType = selectedExercise?.type;
-  const [sets, setSets] = useState('');
-  const [reps, setReps] = useState('');
+  const [sets, setSets] = useState(1);
+  const [reps, setReps] = useState(10);
   const [weight, setWeight] = useState(123.5);
   const [duration, setDuration] = useState(30);
   const [loading, setLoading] = useState(true);

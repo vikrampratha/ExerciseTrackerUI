@@ -3,10 +3,10 @@ import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
 type SetsRepsProps = {
-  sets: string;
-  reps: string;
-  onChangeSets: (value: string) => void;
-  onChangeReps: (value: string) => void;
+  sets: number;
+  reps: number;
+  onChangeSets: (value: number) => void;
+  onChangeReps: (value: number) => void;
   maxSets?: number; 
   maxReps?: number;
 };

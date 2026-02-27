@@ -1,8 +1,9 @@
+import DatePicker from '@/components/DatePicker';
+import WorkoutTypePicker from '@/components/WorkoutTypePicker';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { PropsWithChildren, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import DatePicker from './DatePicker';
 
 type Props = PropsWithChildren<{
   isVisible: boolean;
@@ -14,6 +15,7 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
     const insets = useSafeAreaInsets();
 
     const [date, setDate] = useState(new Date());
+    const [type, setType] = useState<string>();
 
     return (
     <Modal
@@ -54,6 +56,10 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
             value={date}
             onChange={setDate}
         ></DatePicker>
+        <WorkoutTypePicker
+            value={type}
+            onChange={type => setType(type)}
+        />
       </View>
     </Modal>
   );

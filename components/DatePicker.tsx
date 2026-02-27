@@ -123,6 +123,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   picker: {
-    marginTop: 12,
+    //marginTop: 12,
   },
 });

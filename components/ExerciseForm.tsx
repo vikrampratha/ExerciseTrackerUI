@@ -1,4 +1,5 @@
 import ExercisePicker from "@/components/ExercisePicker";
+import ExerciseSetsReps from "@/components/ExerciseSetsReps";
 import { api } from "@/services/api";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -16,6 +17,8 @@ type Props = {
 export default function ExerciseForm({ onAdd, onCancel }: Props) {
   const [exerciseNames, setExerciseNames] = useState<ExerciseName[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<ExerciseName | null>(null);
+  const [sets, setSets] = useState('');
+  const [reps, setReps] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,14 +54,18 @@ export default function ExerciseForm({ onAdd, onCancel }: Props) {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.label}>Name</Text> */}
 
       <ExercisePicker
         data={exerciseNames}
         selected={selectedExercise}
         onSelect={setSelectedExercise}
       />
-
+      <ExerciseSetsReps
+        sets={sets}
+        reps={reps}
+        onChangeSets={setSets}
+        onChangeReps={setReps}
+      />
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
           <Text style={styles.cancelText}>Cancel</Text>

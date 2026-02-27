@@ -14,8 +14,20 @@ type ExerciseName = {
   type: ExerciseType;
 };
 
+type Exercise = {
+  id: string;
+  exerciseNameId: number
+  name: string;
+  type: ExerciseType;
+
+  sets?: number;
+  reps?: number;
+  weight?: number;
+  duration?: number;
+};
+
 type Props = {
-  onAdd: (exercise: ExerciseName) => void;
+  onAdd: (exerciseName: ExerciseName, sets: number, reps: number, weight: number, duration: number) => void;
   onCancel: () => void;
 };
 
@@ -49,7 +61,7 @@ export default function ExerciseForm({ onAdd, onCancel }: Props) {
   
   const handleAdd = () => {
     if (!selectedExercise) return;
-    onAdd(selectedExercise);
+    onAdd(selectedExercise, sets, reps, weight, duration);
   };
 
   if (loading) {

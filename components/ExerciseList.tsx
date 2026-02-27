@@ -4,26 +4,40 @@ import NewExerciseCard from "@/components/NewExerciseCard";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
+type ExerciseType = 'STRENGTH' | 'WEIGHTED_STRENGTH' | 'CARDIO';
+
 type Exercise = {
   id: string;
   exerciseNameId: number
   name: string;
+  type: ExerciseType;
+
+  sets?: number;
+  reps?: number;
+  weight?: number;
+  duration?: number;
 };
 
 type ExerciseName = {
   id: number;
   name: string;
+  type: ExerciseType;
 };
 
 export default function ExerciseList() {
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [mode, setMode] = useState<'list' | 'form'>('list');
 
-    const handleAddExercise = (exerciseName: ExerciseName) => {
+    const handleAddExercise = (exerciseName: ExerciseName, sets: number, reps: number, weight: number, duration: number) => {
         const newExercise: Exercise = {
             id: Date.now().toString(),
             exerciseNameId: exerciseName.id,
             name: exerciseName.name,
+            type: exerciseName.type,
+            sets: exerciseName.type !== 'CARDIO' ? sets : undefined,
+            reps: exerciseName.type !== 'CARDIO' ? reps : undefined,
+            weight: exerciseName.type === 'WEIGHTED_STRENGTH' ? weight : undefined,
+            duration: exerciseName.type === 'CARDIO' ? duration : undefined,
         };
         setExercises(prev => [...prev, newExercise]);
         setMode('list');

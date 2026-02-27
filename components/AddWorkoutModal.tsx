@@ -1,4 +1,5 @@
 import DatePicker from '@/components/DatePicker';
+import ExerciseList from '@/components/ExerciseList';
 import WorkoutTypePicker from '@/components/WorkoutTypePicker';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { PropsWithChildren, useState } from 'react';
@@ -60,6 +61,7 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
             value={type}
             onChange={type => setType(type)}
         />
+        <ExerciseList></ExerciseList>
       </View>
     </Modal>
   );
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '90%',
+    height: '95%',
     backgroundColor: '#25292e',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

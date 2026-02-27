@@ -81,7 +81,7 @@ export default function DatePicker({ value, onChange }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 25,
+    marginTop: 10,
     backgroundColor: '#31363d',
     borderRadius: 20,
     paddingVertical: 15,

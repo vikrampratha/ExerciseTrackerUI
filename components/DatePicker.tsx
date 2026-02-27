@@ -26,6 +26,22 @@ export default function DatePicker({ value, onChange }: Props) {
         setShowPicker(!showPicker);
     };
 
+    const isSameDay = (a: Date, b: Date) =>
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate();
+
+    const formatDisplayDate = (date: Date) => {
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+
+        if (isSameDay(date, today)) return 'Today';
+        if (isSameDay(date, yesterday)) return 'Yesterday';
+
+        return date.toLocaleDateString('en-US', { dateStyle: 'medium' });
+    };
+
     return (
     <View style={styles.container}>
       {/* Inline Row */}
@@ -41,7 +57,7 @@ export default function DatePicker({ value, onChange }: Props) {
           activeOpacity={0.8}
         >
           <Text style={[styles.dateText, isLabelPressed ? styles.dateTextActive : styles.dateTextInactive]}>
-            {selectedDate.toLocaleDateString('en-US', { dateStyle: 'medium' })}
+            {formatDisplayDate(selectedDate)}
           </Text>
         </TouchableOpacity>
       </View>

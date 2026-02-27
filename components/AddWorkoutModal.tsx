@@ -3,7 +3,7 @@ import ExerciseList from '@/components/ExerciseList';
 import WorkoutTypePicker from '@/components/WorkoutTypePicker';
 import { postWorkout } from '@/services/api';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -33,6 +33,18 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState<string>('PUSH');
     const [exercises, setExercises] = useState<Exercise[]>([]);
+
+    useEffect(() => {
+        if (!isVisible) {
+            resetState();
+        }
+    }, [isVisible]);
+    
+    const resetState = () => {
+        setDate(new Date());
+        setType('PUSH');
+        setExercises([]);
+    };
 
     const handleAddExercise = (exercise: Exercise) => {
         setExercises(prev => [...prev, exercise]);

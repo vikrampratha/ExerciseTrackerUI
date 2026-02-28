@@ -22,6 +22,7 @@ type Workout = {
 
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [expandedId, setExpandedId] = useState<string | number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
@@ -29,6 +30,10 @@ export default function WorkoutsScreen() {
       .then(res => setWorkouts(res.data))
       .catch(err => console.error(err));
   }, []);
+
+  const toggleExpand = (id: number) => {
+    setExpandedId(prev => (prev === id ? null : id));
+  };
 
   const onAdd = () => {
     setIsModalVisible(true);
@@ -43,7 +48,13 @@ export default function WorkoutsScreen() {
       <FlatList
         data={workouts}
         keyExtractor={(item: any) => item.id.toString()}
-        renderItem={({ item }) => <WorkoutCard workout={item} />}
+        renderItem={({ item }) => 
+          <WorkoutCard 
+            workout={item} 
+            expanded={expandedId === item.id}
+            onToggle={() => toggleExpand(item.id)}
+          />
+        }
         contentContainerStyle={{ paddingBottom: 20 }}
       />
       <View style={styles.fab}>

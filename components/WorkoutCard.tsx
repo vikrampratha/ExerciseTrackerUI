@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { LayoutAnimation, Platform, StyleSheet, UIManager, View } from 'react-native';
 import ExerciseRow from './ExerciseRow';
 import WorkoutHeader from './WorkoutHeader';
@@ -24,14 +24,15 @@ interface Workout {
 
 interface Props {
   workout: Workout;
+  expanded: boolean;
+  onToggle: () => void;
 }
 
-export default function WorkoutCard({ workout }: Props) {
-  const [expanded, setExpanded] = useState(false);
+export default function WorkoutCard({ workout, expanded, onToggle }: Props) {
 
-  const toggle = () => {
+  const handlePress = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpanded(prev => !prev);
+    onToggle();
   };
 
   const [year, month, day] = workout.date.split('-');
@@ -44,7 +45,7 @@ export default function WorkoutCard({ workout }: Props) {
         date={formattedDate}
         type={workout.type}
         expanded={expanded}
-        onPress={toggle}
+        onPress={handlePress}
       />
 
       {expanded && (

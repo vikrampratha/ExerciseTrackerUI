@@ -1,6 +1,7 @@
 import AddWorkoutModal from '@/components/AddWorkoutModal';
 import CircleButton from '@/components/CircleButton';
 import WorkoutCard from '@/components/WorkoutCard';
+import WorkoutFilterBar from '@/components/WorkoutFilterBar';
 import { api } from '@/services/api';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
@@ -23,6 +24,7 @@ type Workout = {
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [expandedId, setExpandedId] = useState<string | number | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
@@ -35,6 +37,10 @@ export default function WorkoutsScreen() {
     setExpandedId(prev => (prev === id ? null : id));
   };
 
+  const filteredWorkouts = selectedFilter
+    ? workouts.filter(w => w.type === selectedFilter)
+    : workouts;
+
   const onAdd = () => {
     setIsModalVisible(true);
   };
@@ -45,8 +51,12 @@ export default function WorkoutsScreen() {
 
   return (
     <View style={styles.container}>
+      <WorkoutFilterBar
+        selected={selectedFilter}
+        onSelect={setSelectedFilter}
+      />
       <FlatList
-        data={workouts}
+        data={filteredWorkouts}
         keyExtractor={(item: any) => item.id.toString()}
         renderItem={({ item }) => 
           <WorkoutCard 
@@ -61,7 +71,6 @@ export default function WorkoutsScreen() {
         <CircleButton onPress={onAdd} />
       </View>
       <AddWorkoutModal isVisible={isModalVisible} onClose={onModalClose} onConfirm={onModalClose}>
-
       </AddWorkoutModal>
     </View>
   );
@@ -72,7 +81,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#25292e',
     justifyContent: 'center',
-    //alignItems: 'center',
   },
   fab: {
     position: 'absolute',
@@ -116,7 +124,7 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    //alignItems: 'center',
   },
   exercisesContainer: {
     marginTop: 12,

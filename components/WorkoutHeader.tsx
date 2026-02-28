@@ -10,13 +10,13 @@ interface Props {
 }
 
 const typeColors: Record<string, string> = {
-  PUSH: '#FF6B6B',
-  PULL: '#4ECDC4',
-  LEG: '#FFD93D',
-  CARDIO: '#6A4C93',
-  UPPER: '#FF9F1C',
-  LOWER: '#1B998B',
-  FULL: '#2EC4B6',
+  PUSH: '#E63946',
+  PULL: '#457B9D',
+  LEGS: '#2A9D8F',
+  UPPER: '#F4A261',
+  LOWER: '#6A4C93',
+  FULL: '#264653',
+  CARDIO: '#E9C46A',
 };
 
 export default function WorkoutHeader({

@@ -80,11 +80,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#25292e',
-    justifyContent: 'center',
   },
   fab: {
     position: 'absolute',
-    bottom: 50,
+    bottom: 20,
+    alignItems: 'center',
+    left: 0,
+    right: 0,
   },
   text: {
     color: '#fff',

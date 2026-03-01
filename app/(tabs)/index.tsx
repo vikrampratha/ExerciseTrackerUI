@@ -1,24 +1,14 @@
-import { Workout, getWorkouts } from "@/services/api";
-import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { useWorkouts } from "@/hooks/useWorkouts";
+import { useMemo } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { Calendar } from 'react-native-calendars';
+import LastWorkoutCard from "../../components/LastWorkoutCard";
 
 
 export default function Index() {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-
-  useEffect(() => {
-    const fetchWorkouts = async () => {
-      try {
-        const data = await getWorkouts();
-        setWorkouts(data);
-      } catch (error) {
-        console.error('Failed to fetch workouts:', error);
-      }
-    };
-
-    fetchWorkouts();
-  }, []);
+  // const lastWorkoutDate = "2026-02-25";
+  // const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const { workouts, lastWorkoutDate, loading, error } = useWorkouts();
 
   const markedDates = useMemo(() => {
     const marks: Record<string, any> = {};
@@ -42,8 +32,12 @@ export default function Index() {
     return marks;
   }, [workouts]);
 
+  if (loading) return <ActivityIndicator />;
+  if (error) return <Text>{error}</Text>;
+
   return (
     <View style={styles.container}>
+      <LastWorkoutCard lastWorkoutDate={lastWorkoutDate} />
       <Calendar
         current={new Date().toISOString().split('T')[0]}
         maxDate={new Date().toISOString().split('T')[0]}

@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 
 export type Workout = {
   id: number;
-  date: string; // ISO string from backend
+  date: string;
   type: string;
 };
 
@@ -45,10 +45,33 @@ export function useWorkouts() {
     );
   }, [workouts]);
 
+  const thisWeekSummary = useMemo(() => {
+    const now = new Date();
+
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const grouped: Record<string, number> = {};
+
+    workouts.forEach(workout => {
+        // Force local parsing
+        const workoutDate = new Date(workout.date + "T00:00:00");
+
+        if (workoutDate >= startOfWeek) {
+            const type = workout.type.toUpperCase();
+            grouped[type] = (grouped[type] || 0) + 1;
+        }
+    });
+
+    return grouped;
+  }, [workouts]);
+
   return {
     workouts,
     lastWorkout,
     lastWorkoutDate: lastWorkout?.date ?? null,
+    thisWeekSummary,
     loading,
     error,
     refetch: fetchWorkouts,

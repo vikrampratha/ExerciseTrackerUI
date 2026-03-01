@@ -1,3 +1,4 @@
+import ThisWeekCard from "@/components/ThisWeekCard";
 import { useWorkouts } from "@/hooks/useWorkouts";
 import { useMemo } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
@@ -8,7 +9,7 @@ import LastWorkoutCard from "../../components/LastWorkoutCard";
 export default function Index() {
   // const lastWorkoutDate = "2026-02-25";
   // const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const { workouts, lastWorkoutDate, loading, error } = useWorkouts();
+  const { workouts, lastWorkoutDate, thisWeekSummary, loading, error } = useWorkouts();
 
   const markedDates = useMemo(() => {
     const marks: Record<string, any> = {};
@@ -38,6 +39,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <LastWorkoutCard lastWorkoutDate={lastWorkoutDate} />
+      <ThisWeekCard summary={thisWeekSummary} />
       <Calendar
         current={new Date().toISOString().split('T')[0]}
         maxDate={new Date().toISOString().split('T')[0]}

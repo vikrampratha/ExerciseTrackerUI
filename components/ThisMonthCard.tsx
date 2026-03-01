@@ -8,14 +8,17 @@ type Props = {
 export default function ThisMonthCard({ monthlyCount, avgPerWeek }: Props) {
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>This Month</Text>
+      <Text style={styles.label}>THIS MONTH</Text>
 
-      <Text style={styles.stat}>
-        {monthlyCount} workout{monthlyCount !== 1 ? "s" : ""}
+      <Text style={styles.bigNumber}>{monthlyCount}</Text>
+      <Text style={styles.primaryText}>
+        Workout{monthlyCount !== 1 ? "s" : ""}
       </Text>
 
-      <Text style={styles.subStat}>
-        Avg {avgPerWeek} per week
+      <View style={styles.divider} />
+
+      <Text style={styles.secondaryStat}>
+        {avgPerWeek} <Text style={styles.secondaryLabel}>/ week</Text>
       </Text>
     </View>
   );
@@ -23,24 +26,55 @@ export default function ThisMonthCard({ monthlyCount, avgPerWeek }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
+    flex: 1,
+    backgroundColor: "#F2F2F7",
+    borderRadius: 24,
     padding: 20,
-    borderRadius: 12,
+    marginLeft: 10,
+
+    // Subtle depth
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 3,
-    marginVertical: 10,
   },
-  title: {
-    fontSize: 16,
+
+  label: {
+    fontSize: 12,
     fontWeight: "600",
-    marginBottom: 8,
+    color: "#8E8E93",
+    letterSpacing: 1,
+    marginBottom: 12,
   },
-  stat: {
-    fontSize: 22,
-    fontWeight: "bold",
+
+  bigNumber: {
+    fontSize: 40,
+    fontWeight: "700",
+    color: "#000",
   },
-  subStat: {
+
+  primaryText: {
     fontSize: 16,
-    color: "#666",
-    marginTop: 4,
+    color: "#6E6E73",
+    marginTop: 2,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#E5E5EA",
+    marginVertical: 16,
+  },
+
+  secondaryStat: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#000",
+  },
+
+  secondaryLabel: {
+    fontSize: 14,
+    color: "#8E8E93",
+    fontWeight: "400",
   },
 });

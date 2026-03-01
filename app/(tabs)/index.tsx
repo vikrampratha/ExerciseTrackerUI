@@ -1,9 +1,9 @@
+import CalendarCard from "@/components/CalendarCard";
 import ThisMonthCard from "@/components/ThisMonthCard";
 import ThisWeekCard from "@/components/ThisWeekCard";
 import { useWorkouts } from "@/hooks/useWorkouts";
 import { useMemo } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Calendar } from 'react-native-calendars';
 import LastWorkoutCard from "../../components/LastWorkoutCard";
 
 
@@ -58,20 +58,8 @@ export default function Index() {
     <ScrollView contentContainerStyle={styles.container}>
       
       {/* Calendar Section */}
-      <View style={styles.calendarCard}>
-        <Text style={styles.cardLabel}>Activity</Text>
-        <Calendar
-          current={new Date().toISOString().split('T')[0]}
-          maxDate={new Date().toISOString().split('T')[0]}
-          markingType="custom"
-          markedDates={markedDates}
-          theme={{
-            calendarBackground: '#25292e',
-            dayTextColor: '#fff',
-            monthTextColor: '#fff',
-            arrowColor: '#fff',
-          }}
-        />
+      <View style={styles.section}>
+        <CalendarCard workouts={workouts} />
       </View>
 
       {/* Stats Row */}

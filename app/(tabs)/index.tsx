@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20,
+    gap: 12,
   },
   calendarCard: {
     backgroundColor: "#F2F2F7",

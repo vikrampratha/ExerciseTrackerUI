@@ -57,7 +57,6 @@ export function useWorkouts() {
     workouts.forEach(workout => {
         // Force local parsing
         const workoutDate = new Date(workout.date + "T00:00:00");
-
         if (workoutDate >= startOfWeek) {
             const type = workout.type.toUpperCase();
             grouped[type] = (grouped[type] || 0) + 1;
@@ -67,11 +66,40 @@ export function useWorkouts() {
     return grouped;
   }, [workouts]);
 
+const thisMonthSummary = useMemo(() => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  const workoutsThisMonth = workouts.filter(workout => {
+    const date = new Date(workout.date + "T00:00:00");
+    return (
+      date.getFullYear() === currentYear &&
+      date.getMonth() === currentMonth
+    );
+  });
+
+  const monthlyCount = workoutsThisMonth.length;
+  const dayOfMonth = now.getDate();
+  const weeksElapsed = Math.ceil(dayOfMonth / 7);
+
+  const avgPerWeek =
+    weeksElapsed > 0
+      ? +(monthlyCount / weeksElapsed).toFixed(1)
+      : 0;
+
+  return {
+    monthlyCount,
+    avgPerWeek,
+  };
+}, [workouts]);
+
   return {
     workouts,
     lastWorkout,
     lastWorkoutDate: lastWorkout?.date ?? null,
     thisWeekSummary,
+    thisMonthSummary,
     loading,
     error,
     refetch: fetchWorkouts,

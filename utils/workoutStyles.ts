@@ -18,39 +18,39 @@ export function getWorkoutTypeColors(type: string) {
     { bg: string; fg: string }
   > = {
     PUSH: {
-      bg: "#FFE5E5",
-      fg: "#B00020",
+      fg: "#FFE5E5",
+      bg: "#B00020",
     },
     PULL: {
-      bg: "#E6F0FF",
-      fg: "#1D4ED8",
+      fg: "#E6F0FF",
+      bg: "#1D4ED8",
     },
     LEGS: {
-      bg: "#E8FFF1",
-      fg: "#0F766E",
+      fg: "#E8FFF1",
+      bg: "#0F766E",
     },
     UPPER_BODY: {
-      bg: "#FFF4E5",
-      fg: "#B45309",
+      fg: "#FFF4E5",
+      bg: "#B45309",
     },
     LOWER_BODY: {
-      bg: "#E0F2FE",
-      fg: "#0369A1",
+      fg: "#E0F2FE",
+      bg: "#0369A1",
     },
     FULL_BODY: {
-      bg: "#F3E8FF",
-      fg: "#6D28D9",
+      fg: "#F3E8FF",
+      bg: "#6D28D9",
     },
     CARDIO: {
-      bg: "#FFE8F0",
-      fg: "#e37aa6",
+      fg: "#FFE8F0",
+      bg: "#e37aa6",
     },
   };
 
   return (
     map[normalized] ?? {
-      bg: "#E5E5EA", // neutral fallback
-      fg: "#1C1C1E",
+      fg: "#E5E5EA", // neutral fallback
+      bg: "#1C1C1E",
     }
   );
 }

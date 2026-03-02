@@ -18,7 +18,7 @@ export default function CalendarCard({ workouts }: Props) {
     const marks: Record<string, any> = {};
 
     workouts.forEach((w) => {
-        const { fg } = getWorkoutTypeColors(w.type);
+        const { bg } = getWorkoutTypeColors(w.type);
         marks[w.date] = {
             customStyles: {
                 container: {
@@ -27,7 +27,7 @@ export default function CalendarCard({ workouts }: Props) {
                     borderRadius: 14,
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor: fg,
+                    backgroundColor: bg,
                 },
                 text: {
                     color: "#FFFFFF",
@@ -72,12 +72,12 @@ export default function CalendarCard({ workouts }: Props) {
                 textDayHeaderFontSize: 10,
                 textDayHeaderFontWeight: "600",
 
-                monthTextColor: "#1C1C1E",
-                dayTextColor: "#1C1C1E",
-                textSectionTitleColor: "#8E8E93",
-                textDisabledColor: "#C7C7CC",
+                monthTextColor: "#FFFFFF",
+                dayTextColor: "#FFFFFF",
+                textSectionTitleColor: "#A1A1AA",
+                textDisabledColor: "#52525B",
                 todayTextColor: "#FF3B30",
-                arrowColor: "#1C1C1E",
+                arrowColor: "#FFFFFF",
 
                 "stylesheet.day.basic": {
                     base: {
@@ -90,7 +90,7 @@ export default function CalendarCard({ workouts }: Props) {
                         marginTop: 0,
                         fontSize: 12,
                         fontWeight: "600",
-                        color: "#1C1C1E",
+                        color: "#FFFFFF",
                     },
                     today: {
                         borderRadius: 15,
@@ -115,15 +115,14 @@ export default function CalendarCard({ workouts }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#F2F2F7",
+    backgroundColor: "#1C1C1E",
     borderRadius: 24,
     padding: 20,
-
     shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
   },
 
   headerRow: {
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#8E8E93",
+    color: "#A1A1AA",
     letterSpacing: 1,
   },
 
@@ -149,8 +148,8 @@ const styles = StyleSheet.create({
   chip: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#1C1C1E",
-    backgroundColor: "#E5E5EA",
+    color: "#FFFFFF",
+    backgroundColor: "#2C2C2E",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 999,
@@ -159,12 +158,12 @@ const styles = StyleSheet.create({
   chipSub: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#6E6E73",
+    color: "#A1A1AA",
   },
 
   calendarWrap: {
     borderRadius: 18,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#2C2C2E",
     padding: 10,
 
     shadowColor: "#000",

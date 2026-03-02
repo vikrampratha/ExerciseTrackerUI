@@ -55,25 +55,27 @@ export default function Index() {
     </View>
   ); */
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      
-      {/* Last Workout */}
-      <View style={styles.section}>
-        <LastWorkoutCard lastWorkout={lastWorkout} />
-      </View>
-      
-      {/* Calendar Section */}
-      <View style={styles.section}>
-        <CalendarCard workouts={workouts} />
-      </View>
+    <View style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.container}>
+        
+        {/* Last Workout */}
+        <View style={styles.section}>
+          <LastWorkoutCard lastWorkout={lastWorkout} />
+        </View>
 
-      {/* Stats Row */}
-      <View style={styles.statsRow}>
-        <ThisWeekCard summary={thisWeekSummary} />
-        <ThisMonthCard monthlyCount={thisMonthSummary.monthlyCount} avgPerWeek={thisMonthSummary.avgPerWeek} />
-      </View>
+        {/* Calendar Section */}
+        <View style={styles.section}>
+          <CalendarCard workouts={workouts} />
+        </View>
 
-    </ScrollView>
+        {/* Stats Row */}
+        <View style={styles.statsRow}>
+          <ThisWeekCard summary={thisWeekSummary} />
+          <ThisMonthCard monthlyCount={thisMonthSummary.monthlyCount} avgPerWeek={thisMonthSummary.avgPerWeek} />
+        </View>
+
+      </ScrollView>
+    </View>
   );
 }
 
@@ -95,6 +97,10 @@ export default function Index() {
 }); */
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: "#000000",
+  },
   container: {
     padding: 20,
     paddingBottom: 40,

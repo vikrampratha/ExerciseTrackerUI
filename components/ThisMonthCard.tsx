@@ -27,23 +27,21 @@ export default function ThisMonthCard({ monthlyCount, avgPerWeek }: Props) {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    backgroundColor: "#F2F2F7",
+    backgroundColor: "#1C1C1E",
     borderRadius: 24,
     padding: 20,
     marginLeft: 10,
-
-    // Subtle depth
     shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
   },
 
   label: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#8E8E93",
+    color: "#A1A1AA",
     letterSpacing: 1,
     marginBottom: 12,
   },
@@ -51,30 +49,30 @@ const styles = StyleSheet.create({
   bigNumber: {
     fontSize: 40,
     fontWeight: "700",
-    color: "#000",
+    color: "#FFFFFF",
   },
 
   primaryText: {
     fontSize: 16,
-    color: "#6E6E73",
+    color: "#A1A1AA",
     marginTop: 2,
   },
 
   divider: {
     height: 1,
-    backgroundColor: "#E5E5EA",
+    backgroundColor: "#2C2C2E",
     marginVertical: 16,
   },
 
   secondaryStat: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#000",
+    color: "#FFFFFF",
   },
 
   secondaryLabel: {
     fontSize: 14,
-    color: "#8E8E93",
+    color: "#A1A1AA",
     fontWeight: "400",
   },
 });

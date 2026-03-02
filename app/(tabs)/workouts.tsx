@@ -1,4 +1,4 @@
-import AddWorkoutModal from '@/components/AddWorkoutModal';
+import NewWorkoutModal from '@/components/NewWorkoutModal';
 import WorkoutCard from '@/components/WorkoutCard';
 import WorkoutFilterBar from '@/components/WorkoutFilterBar';
 import { useWorkouts } from '@/hooks/useWorkouts';
@@ -27,7 +27,7 @@ export default function WorkoutsScreen() {
     setIsModalVisible(true);
   };
   
-  const onModalClose = () => {
+  const onClose = () => {
     setIsModalVisible(false);
   };
 
@@ -79,8 +79,10 @@ export default function WorkoutsScreen() {
             }}
           />
         )}
-      <AddWorkoutModal isVisible={isModalVisible} onClose={onModalClose} onConfirm={onModalClose}>
-      </AddWorkoutModal>
+      <NewWorkoutModal 
+        visible={isModalVisible}
+        onClose={onClose}
+        onConfirm={onClose} />
     </SafeAreaView>
   );
 }

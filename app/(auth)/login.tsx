@@ -5,19 +5,19 @@ import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function LoginScreen() {
-  const { signInMock } = useAuth();
+  const { signIn } = useAuth();
 
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("admin");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const onLogin = async () => {
+  const onSignIn = async () => {
     if (submitting) return;
     setSubmitting(true);
     setError(null);
 
-    const res = await signInMock(username.trim(), password);
+    const res = await signIn(username.trim(), password);
     setSubmitting(false);
 
     if (!res.ok) {
@@ -34,7 +34,7 @@ export default function LoginScreen() {
         <View style={styles.header}>
           <Text style={styles.kicker}>WELCOME BACK</Text>
           <Text style={styles.title}>Sign in</Text>
-          <Text style={styles.sub}>Mock login for now. Use <Text style={styles.inlineCode}>admin/admin</Text>.</Text>
+          <Text style={styles.sub}>For testing:  <Text style={styles.inlineCode}>admin/admin</Text>.</Text>
         </View>
 
         <View style={{ gap: 12 }}>
@@ -66,7 +66,7 @@ export default function LoginScreen() {
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <Pressable
-            onPress={onLogin}
+            onPress={onSignIn}
             disabled={submitting}
             style={({ pressed }) => [
               styles.loginBtn,

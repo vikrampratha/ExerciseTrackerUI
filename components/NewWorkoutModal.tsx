@@ -225,7 +225,10 @@ export default function NewWorkoutModal({
                 {/* Bottom: exercise list only */}
                 <View style={styles.section}>
                   <Text style={styles.sectionLabel}>EXERCISES</Text>
-                  <ExerciseList exercises={exercises as any} emptyText="No exercises added yet." />
+                  <ExerciseList 
+                    exercises={exercises as any} 
+                    emptyText="No exercises added yet." 
+                    onDelete={(clientId) => setExercises((prev) => prev.filter((e) => e.clientId !== clientId))} />
                 </View>
 
                 <View style={{ height: 18 }} />

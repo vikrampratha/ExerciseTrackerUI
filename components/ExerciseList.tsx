@@ -1,7 +1,8 @@
 import { NewExercise } from "@/hooks/useExerciseNames";
 import { Exercise } from "@/services/api";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { prettyExerciseName } from "../utils/workoutStyles";
 
 export type ExerciseType = "STRENGTH" | "WEIGHTED_STRENGTH" | "CARDIO";
@@ -9,9 +10,10 @@ export type ExerciseType = "STRENGTH" | "WEIGHTED_STRENGTH" | "CARDIO";
 type Props = {
   exercises: NewExercise[];
   emptyText?: string;
+  onDelete?: (clientId: string) => void; 
 };
 
-export default function ExerciseList({ exercises, emptyText = "No exercises added yet." }: Props) {
+export default function ExerciseList({ exercises, emptyText = "No exercises added yet.", onDelete}: Props) {
   if (exercises.length === 0) {
     return <Text style={styles.empty}>{emptyText}</Text>;
   }
@@ -31,6 +33,16 @@ export default function ExerciseList({ exercises, emptyText = "No exercises adde
           <Text style={styles.meta} numberOfLines={1}>
             {formatMeta(ex)}
           </Text>
+
+          {onDelete ? (
+            <Pressable
+              onPress={() => onDelete(ex.clientId)}
+              hitSlop={10}
+              style={({ pressed }) => [styles.deleteBtn, pressed && styles.pressed]}
+            >
+              <Ionicons name="trash-outline" size={18} color="#FF453A" />
+            </Pressable>
+          ) : null}
         </View>
       ))}
     </View>
@@ -87,4 +99,15 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 20,
   },
+  deleteBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#2C2C2E",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+  pressed: { opacity: 0.9, transform: [{ scale: 0.98 }] },
 });

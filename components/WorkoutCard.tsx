@@ -1,5 +1,5 @@
 import { Exercise, Workout } from '@/services/api';
-import { getWorkoutTypeColors, prettyExerciseName, prettyWorkoutType } from '@/utils/workoutStyles';
+import { getWorkoutTypeColors, prettyDate, prettyExerciseName, prettyWorkoutType } from '@/utils/workoutStyles';
 import React, { useMemo } from 'react';
 import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
@@ -47,7 +47,7 @@ export default function WorkoutCard({ workout, expanded, onToggle }: Props) {
       {/* Header */}
       <View style={styles.topRow}>
         <View style={styles.left}>
-          <Text style={styles.date}>{formattedDate}</Text>
+          <Text style={styles.date}>{prettyDate(formattedDate)}</Text>
           <Text style={styles.subtle}>{expanded ? "Tap to collapse" : "Tap to expand"}</Text>
         </View>
 

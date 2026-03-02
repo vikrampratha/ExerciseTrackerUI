@@ -1,10 +1,10 @@
 import AddWorkoutModal from '@/components/AddWorkoutModal';
-import CircleButton from '@/components/CircleButton';
 import WorkoutCard from '@/components/WorkoutCard';
 import WorkoutFilterBar from '@/components/WorkoutFilterBar';
 import { useWorkouts } from '@/hooks/useWorkouts';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function WorkoutsScreen() {
@@ -34,15 +34,23 @@ export default function WorkoutsScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
+        <View style={styles.headerRow}>
+        <View style={styles.headerLeft}>
           <Text style={styles.kicker}>WORKOUTS</Text>
           <Text style={styles.title}>Workout History</Text>
         </View>
+        <Pressable onPress={onAdd} style={({ pressed }) => [styles.addBtn, pressed && styles.addBtnPressed]}>
+          <Ionicons name="add" size={30} color="#FFFFFF" />
+          <Text style={styles.addBtnText}>Add</Text>
+        </Pressable>
+        </View>
+      </View>
 
-        <WorkoutFilterBar
-          types={types}
-          selectedType={selectedType}
-          onSelect={selectType}
-        />
+      <WorkoutFilterBar
+        types={types}
+        selectedType={selectedType}
+        onSelect={selectType}
+      />
       {loading ? (
           <View style={styles.center}>
             <ActivityIndicator />
@@ -71,9 +79,6 @@ export default function WorkoutsScreen() {
             }}
           />
         )}
-      <View style={styles.fab}>
-        <CircleButton onPress={onAdd} />
-      </View>
       <AddWorkoutModal isVisible={isModalVisible} onClose={onModalClose} onConfirm={onModalClose}>
       </AddWorkoutModal>
     </SafeAreaView>
@@ -84,6 +89,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+  headerLeft: {
+    flex: 1,
+    gap: 6,
   },
   fab: {
     position: 'absolute',
@@ -174,5 +188,33 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     opacity: 0.85,
     fontWeight: "700",
+  },
+  addBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: "#1C1C1E",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+    shadowColor: "#000",
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
+  },
+
+  addBtnPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+
+  addBtnText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "800",
+    letterSpacing: 0.2,
   },
 });

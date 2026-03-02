@@ -5,6 +5,7 @@ import WorkoutFilterBar from '@/components/WorkoutFilterBar';
 import { api } from '@/services/api';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Exercise {
   name: string;
@@ -50,7 +51,7 @@ export default function WorkoutsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <WorkoutFilterBar
         selected={selectedFilter}
         onSelect={setSelectedFilter}
@@ -72,7 +73,7 @@ export default function WorkoutsScreen() {
       </View>
       <AddWorkoutModal isVisible={isModalVisible} onClose={onModalClose} onConfirm={onModalClose}>
       </AddWorkoutModal>
-    </View>
+    </SafeAreaView>
   );
 }
 

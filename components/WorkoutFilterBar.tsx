@@ -1,96 +1,97 @@
+import { WorkoutFilterType, WorkoutType } from '@/hooks/useWorkouts';
+import { getWorkoutTypeColors, prettyWorkoutType } from '@/utils/workoutStyles';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-interface Props {
-  selected: string | null;
-  onSelect: (type: string | null) => void;
-}
-
-const types = ['PUSH', 'PULL', 'LEGS', 'UPPER', 'LOWER', 'FULL', 'CARDIO'];
-
-const typeColors: Record<string, string> = {
-  PUSH: '#E63946',
-  PULL: '#457B9D',
-  LEGS: '#2A9D8F',
-  UPPER: '#F4A261',
-  LOWER: '#6A4C93',
-  FULL: '#264653',
-  CARDIO: '#E9C46A',
+type Props = {
+  types: WorkoutFilterType[];
+  selectedType: WorkoutFilterType;
+  onSelect: (t: WorkoutFilterType) => void;
 };
 
-export default function WorkoutFilterBar({ selected, onSelect }: Props) {
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.container}
-      style={{ flexGrow: 0 }}
-    >
-      {/* ALL Badge */}
-      <TouchableOpacity
-        style={[
-          styles.badge,
-          selected === null && styles.activeBadge,
-        ]}
-        onPress={() => onSelect(null)}
-      >
-        <Text style={[
-          styles.badgeText,
-          selected === null && styles.activeBadgeText
-        ]}>
-          ALL
-        </Text>
-      </TouchableOpacity>
 
-      {types.map(type => {
-        const isActive = selected === type;
-        return (
-          <TouchableOpacity
-            key={type}
-            style={[
-              styles.badge,
-              { borderColor: typeColors[type] },
-              isActive && { backgroundColor: typeColors[type] }
-            ]}
-            onPress={() => onSelect(type)}
-          >
-            <Text style={[
-              styles.badgeText,
-              isActive && styles.activeBadgeText
-            ]}>
-              {type}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
+export default function WorkoutFilterBar({ types, selectedType, onSelect }: Props) {
+  return (
+    <View style={styles.wrap}>
+      <Text style={styles.label}>FILTER</Text>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.row}
+      >
+        {types.map((t) => {
+          const isSelected = selectedType === t;
+
+          // "ALL" gets a neutral style; other types use palette
+          const palette =
+            t === "ALL" ? { bg: "#2C2C2E", fg: "#FFFFFF" } : getWorkoutTypeColors(t as WorkoutType);
+
+          const backgroundColor = isSelected ? palette.fg : "#2C2C2E";
+          const borderColor = isSelected ? palette.fg : "#3A3A3C";
+          const textColor = isSelected ? "#000000" : "#E5E5EA";
+
+          // For ALL selected, invert a bit so it reads well
+          const allSelectedTextColor = "#FFFFFF";
+
+          const labelText = t === "ALL" ? "All" : prettyWorkoutType(t);
+
+          return (
+            <TouchableOpacity
+              key={t}
+              onPress={() => onSelect(t)}
+              activeOpacity={0.85}
+              style={[styles.chip, { backgroundColor, borderColor }]}
+            >
+              <Text
+                style={[
+                  styles.chipText,
+                  { color: t === "ALL" ? (isSelected ? allSelectedTextColor : "#E5E5EA") : textColor },
+                ]}
+              >
+                {labelText}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+
+      <Text style={styles.hint}>
+        {selectedType === "ALL" ? "Showing all workouts" : `Filtered: ${prettyWorkoutType(selectedType)}`}
+      </Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-    backgroundColor: '#25292e',
+  wrap: {
+    marginBottom: 14,
   },
-  badge: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: '#ccc',
-    marginRight: 10,
+  label: {
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 1,
+    color: "#A1A1AA",
+    marginBottom: 10,
   },
-  badgeText: {
+  row: {
+    gap: 10,
+    paddingRight: 4,
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  chipText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#444',
+    fontWeight: "800",
+    letterSpacing: 0.2,
   },
-  activeBadge: {
-    backgroundColor: '#222',
-    borderColor: '#222',
-  },
-  activeBadgeText: {
-    color: '#fff',
+  hint: {
+    marginTop: 10,
+    fontSize: 12,
+    color: "#A1A1AA",
   },
 });

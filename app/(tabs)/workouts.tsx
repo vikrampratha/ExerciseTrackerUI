@@ -1,10 +1,9 @@
 import AddWorkoutModal from '@/components/AddWorkoutModal';
 import CircleButton from '@/components/CircleButton';
-import WorkoutCard from '@/components/WorkoutCard';
 import WorkoutFilterBar from '@/components/WorkoutFilterBar';
-import { api } from '@/services/api';
-import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { useWorkouts } from '@/hooks/useWorkouts';
+import React, { useCallback, useMemo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Exercise {
@@ -23,24 +22,23 @@ type Workout = {
 };
 
 export default function WorkoutsScreen() {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [expandedId, setExpandedId] = useState<string | number | null>(null);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    api.get('/workouts/recent')
-      .then(res => setWorkouts(res.data))
-      .catch(err => console.error(err));
+  const { workouts, loading, error, types, selectedType, selectType } = useWorkouts();
+
+
+  const toggleExpanded = useCallback((id: number) => {
+    setExpandedId((prev) => (prev === id ? null : id));
   }, []);
 
-  const toggleExpand = (id: number) => {
-    setExpandedId(prev => (prev === id ? null : id));
-  };
+  // collapse expanded card when filter changes
+  React.useEffect(() => {
+    setExpandedId(null);
+  }, [selectedType]);
 
-  const filteredWorkouts = selectedFilter
-    ? workouts.filter(w => w.type === selectedFilter)
-    : workouts;
+  const data = useMemo(() => workouts, [workouts]);
 
   const onAdd = () => {
     setIsModalVisible(true);
@@ -52,11 +50,17 @@ export default function WorkoutsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <WorkoutFilterBar
-        selected={selectedFilter}
-        onSelect={setSelectedFilter}
-      />
-      <FlatList
+      <View style={styles.header}>
+          <Text style={styles.kicker}>WORKOUTS</Text>
+          <Text style={styles.title}>Workout History</Text>
+        </View>
+
+        <WorkoutFilterBar
+          types={types}
+          selectedType={selectedType}
+          onSelect={selectType}
+        />
+      {/* <FlatList
         data={filteredWorkouts}
         keyExtractor={(item: any) => item.id.toString()}
         renderItem={({ item }) => 
@@ -67,7 +71,7 @@ export default function WorkoutsScreen() {
           />
         }
         contentContainerStyle={{ paddingBottom: 20 }}
-      />
+      /> */}
       <View style={styles.fab}>
         <CircleButton onPress={onAdd} />
       </View>
@@ -80,7 +84,7 @@ export default function WorkoutsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
+    backgroundColor: '#000000',
   },
   fab: {
     position: 'absolute',
@@ -140,5 +144,36 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     marginBottom: 6,
+  },
+  header: {
+    paddingTop: 8,
+    paddingBottom: 14,
+    gap: 6,
+  },
+  kicker: {
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 1.2,
+    color: "#A1A1AA",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "900",
+    color: "#FFFFFF",
+  },
+  list: {
+    paddingTop: 8,
+    paddingBottom: 30,
+  },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  error: {
+    color: "#FFFFFF",
+    opacity: 0.85,
+    fontWeight: "700",
   },
 });

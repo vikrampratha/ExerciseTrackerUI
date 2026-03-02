@@ -1,6 +1,7 @@
 import ExerciseForm from "@/components/ExerciseForm";
 import ExerciseList from "@/components/ExerciseList";
 import type { NewExercise } from "@/hooks/useExerciseNames";
+import { toWorkoutDTO, WorkoutDTO } from "@/services/api";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useMemo, useState } from "react";
@@ -31,7 +32,7 @@ export type NewWorkoutType =
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (payload: { date: string; type: NewWorkoutType; exercises: NewExercise[] }) => void;
+  onConfirm: (dto: WorkoutDTO) => void;
   initialDate?: Date;
   initialType?: NewWorkoutType;
 };
@@ -72,7 +73,9 @@ export default function NewWorkoutModal({
   }, [date]);
 
   const handleConfirm = () => {
-    onConfirm({ date: dateString, type, exercises });
+    const dto = toWorkoutDTO({ date: dateString, type, exercises });
+    console.log("WorkoutDTO:", JSON.stringify(dto, null, 2));
+    onConfirm(dto as any);
   };
 
   const handleClose = () => {
@@ -154,8 +157,8 @@ export default function NewWorkoutModal({
                           if (Platform.OS !== "ios") setShowPicker(false);
                           if (selected) setDate(selected);
                         }}
-                        maximumDate={new Date(2100, 11, 31)}
-                        minimumDate={new Date(2000, 0, 1)}
+                        maximumDate={new Date()}
+                        minimumDate={new Date(2020, 0, 1)}
                       />
 
                       {Platform.OS === "ios" ? (

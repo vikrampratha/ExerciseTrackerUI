@@ -1,6 +1,5 @@
 import DatePicker from '@/components/DatePicker';
 import WorkoutTypePicker from '@/components/WorkoutTypePicker';
-import { postWorkout } from '@/services/api';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -74,8 +73,8 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
         };
         console.log(payload);
         try {
-            const result = await postWorkout(payload);
-            console.log('Workout saved:', result);
+            //const result = await postWorkout(payload);
+            //console.log('Workout saved:', result);
         } catch (error) {
             console.error('Error posting workout:', error);
         }

@@ -2,23 +2,24 @@ import NewWorkoutModal from '@/components/NewWorkoutModal';
 import WorkoutCard from '@/components/WorkoutCard';
 import WorkoutFilterBar from '@/components/WorkoutFilterBar';
 import { useWorkouts } from '@/hooks/useWorkouts';
+import { WorkoutDTO } from '@/services/api';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function WorkoutsScreen() {
-  const { workouts, loading, error, types, selectedType, selectType } = useWorkouts();
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const { workouts, loading, error, types, selectedType, selectType, addWorkoutOptimistic, createWorkout } = useWorkouts();
+  const [expandedId, setExpandedId] = useState<string | number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
   const data = useMemo(() => workouts, [workouts]);
 
-  const toggleExpanded = useCallback((id: number) => {
+  const toggleExpanded = useCallback((id: string | number) => {
     setExpandedId((prev) => (prev === id ? null : id));
   }, []);
 
-  // collapse expanded card when filter changes
   React.useEffect(() => {
     setExpandedId(null);
   }, [selectedType]);
@@ -30,6 +31,20 @@ export default function WorkoutsScreen() {
   const onClose = () => {
     setIsModalVisible(false);
   };
+
+  const onConfirm = async (dto: WorkoutDTO) => {
+    if (submitting) return;
+    setSubmitting(true);
+    setIsModalVisible(false);
+    const result = await createWorkout(dto);
+    console.log("SUBMITTING:", JSON.stringify(dto, null, 2));
+    if (!result.ok) {
+      // TODO: show toast/snackbar. For now:
+      console.log(result.message);
+    }
+    setSubmitting(false);
+
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -82,7 +97,7 @@ export default function WorkoutsScreen() {
       <NewWorkoutModal 
         visible={isModalVisible}
         onClose={onClose}
-        onConfirm={onClose} />
+        onConfirm={(dto) => onConfirm(dto)} />
     </SafeAreaView>
   );
 }

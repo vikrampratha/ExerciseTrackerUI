@@ -1,6 +1,6 @@
-import { api, Workout } from "@/services/api";
-import { useFocusEffect } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { api, postWorkout, Workout, WorkoutDTO } from "@/services/api";
+import { nanoid } from "nanoid/non-secure";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export type WorkoutType =
   | "PUSH"
@@ -19,31 +19,62 @@ export function useWorkouts() {
   const [error, setError] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<WorkoutFilterType>("ALL");
 
-  const fetchWorkouts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get<Workout[]>("/getAllWorkouts");
-      setWorkouts(response.data);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to fetch workouts");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Auto refresh when tab becomes active (Expo Router)
-  useFocusEffect(
-    useCallback(() => {
-      fetchWorkouts();
-    }, [])
-  );
-
   const types: WorkoutFilterType[] = useMemo(
     () => ["ALL", "PUSH", "PULL", "LEGS", "UPPER_BODY", "LOWER_BODY", "FULL_BODY", "CARDIO"],
     []
   );
+
+  const refetch = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await api.get<Workout[]>("/getAllWorkouts");
+      setWorkouts(res.data);
+    } catch (e) {
+      console.error(e);
+      setError("Failed to load workouts");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  const createWorkout = useCallback(
+    async (dto: WorkoutDTO) => {
+       // initial optimistic insert
+      const tempId = `temp-${nanoid()}`;
+      const optimistic: Workout = { ...dto, id: tempId, isOptimistic: true };
+      setWorkouts((prev) => [optimistic, ...prev]);
+
+      try {
+        await postWorkout(dto);
+        await refetch();
+        return { ok: true as const };
+      } catch (e) {
+        console.error(e);
+        // rollback optimistic item
+        setWorkouts((prev) => prev.filter((w) => w.id !== tempId));
+        return { ok: false as const, message: "Failed to save workout" };
+      }
+    },[refetch]
+  );
+
+
+  const addWorkoutOptimistic = useCallback((dto: WorkoutDTO) => {
+    const optimistic: Workout = {
+      ...dto,
+      id: `temp-${nanoid()}`,
+      isOptimistic: true,
+    };
+    setWorkouts((prev) => [optimistic, ...prev]);
+  }, []);
+
+  const removeWorkoutById = useCallback((id: string | number) => {
+    setWorkouts((prev) => prev.filter((w) => w.id !== id));
+  }, []);
 
   const filteredWorkouts = useMemo(() => {
     if (selectedType === "ALL") return workouts;
@@ -128,9 +159,12 @@ const thisMonthSummary = useMemo(() => {
     thisMonthSummary,
     loading,
     error,
-    refetch: fetchWorkouts,
+    refetch,
+    addWorkoutOptimistic,
+    removeWorkoutById,
     types,
     selectedType,
-    selectType
+    selectType,
+    createWorkout
   };
 }

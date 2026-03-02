@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { getWorkoutTypeColors, prettyWorkoutType } from "../utils/workoutStyles";
 
 type Props = {
-  // e.g. { PUSH: 2, CARDIO: 1 }
   summary: Record<string, number>;
 };
 
@@ -10,7 +10,6 @@ type Row = { type: string; count: number };
 
 export default function ThisWeekCard({ summary }: Props) {
   const rows: Row[] = useMemo(() => {
-    // Convert to list, remove 0-count entries, sort by count desc then name
     return Object.entries(summary)
       .map(([type, count]) => ({ type, count }))
       .filter((r) => r.count > 0)
@@ -34,37 +33,32 @@ export default function ThisWeekCard({ summary }: Props) {
       {rows.length === 0 ? (
         <Text style={styles.empty}>No workouts yet</Text>
       ) : (
-        <View style={styles.list}>
-          {rows.map((r, idx) => (
-            <View key={r.type}>
-              <View style={styles.row}>
-                <Text style={styles.typeText} numberOfLines={1}>
-                  {prettyType(r.type)}
-                </Text>
+        <View>
+          {rows.map((r, idx) => {
+            const { bg, fg } = getWorkoutTypeColors(r.type);
 
-                <View style={styles.countPill}>
-                  <Text style={styles.countText}>{r.count}</Text>
+            return (
+              <View key={r.type}>
+                <View style={styles.row}>
+                  <View style={[styles.typePill, { backgroundColor: bg }]}>
+                    <Text style={[styles.typePillText, { color: fg }]} numberOfLines={1}>
+                      {prettyWorkoutType(r.type)}
+                    </Text>
+                  </View>
+
+                  <View style={styles.countPill}>
+                    <Text style={styles.countText}>{r.count}</Text>
+                  </View>
                 </View>
-              </View>
 
-              {idx < rows.length - 1 ? <View style={styles.rowDivider} /> : null}
-            </View>
-          ))}
+                {idx < rows.length - 1 ? <View style={styles.rowDivider} /> : null}
+              </View>
+            );
+          })}
         </View>
       )}
     </View>
   );
-}
-
-function prettyType(type: string) {
-  // Makes "UPPER_SNAKE" or "upper" look nice
-  const cleaned = type.replace(/_/g, " ").trim();
-  return cleaned
-    .toLowerCase()
-    .split(" ")
-    .filter(Boolean)
-    .map((w) => w[0]?.toUpperCase() + w.slice(1))
-    .join(" ");
 }
 
 const styles = StyleSheet.create({
@@ -73,7 +67,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F7",
     borderRadius: 24,
     padding: 20,
-
     shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 10,
@@ -123,10 +116,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  list: {
-    gap: 0, // rowDivider handles rhythm
-  },
-
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -135,11 +124,22 @@ const styles = StyleSheet.create({
     gap: 12,
   },
 
-  typeText: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1C1C1E",
+  typePill: {
+    maxWidth: "70%",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+
+  typePillText: {
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0.2,
   },
 
   countPill: {
@@ -150,7 +150,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 6,
-
     shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowRadius: 6,
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
 
   countText: {
     fontSize: 14,
-    fontWeight: "700",
+    fontWeight: "800",
     color: "#1C1C1E",
   },
 

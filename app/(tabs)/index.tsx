@@ -8,7 +8,7 @@ import LastWorkoutCard from "../../components/LastWorkoutCard";
 
 
 export default function Index() {
-  const { workouts, lastWorkoutDate, thisWeekSummary, thisMonthSummary, loading, error } = useWorkouts();
+  const { workouts, lastWorkout, lastWorkoutDate, thisWeekSummary, thisMonthSummary, loading, error } = useWorkouts();
 
   const markedDates = useMemo(() => {
     const marks: Record<string, any> = {};
@@ -57,6 +57,11 @@ export default function Index() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       
+      {/* Last Workout */}
+      <View style={styles.section}>
+        <LastWorkoutCard lastWorkout={lastWorkout} />
+      </View>
+      
       {/* Calendar Section */}
       <View style={styles.section}>
         <CalendarCard workouts={workouts} />
@@ -66,11 +71,6 @@ export default function Index() {
       <View style={styles.statsRow}>
         <ThisWeekCard summary={thisWeekSummary} />
         <ThisMonthCard monthlyCount={thisMonthSummary.monthlyCount} avgPerWeek={thisMonthSummary.avgPerWeek} />
-      </View>
-
-      {/* Last Workout */}
-      <View style={styles.section}>
-        <LastWorkoutCard lastWorkoutDate={lastWorkoutDate} />
       </View>
 
     </ScrollView>

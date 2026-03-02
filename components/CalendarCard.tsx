@@ -1,9 +1,11 @@
+import { getWorkoutTypeColors } from "@/utils/workoutStyles";
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 
 type Workout = {
   date: string;
+  type: string;
 };
 
 type Props = {
@@ -16,6 +18,7 @@ export default function CalendarCard({ workouts }: Props) {
     const marks: Record<string, any> = {};
 
     workouts.forEach((w) => {
+        const { fg } = getWorkoutTypeColors(w.type);
         marks[w.date] = {
             customStyles: {
                 container: {
@@ -24,7 +27,7 @@ export default function CalendarCard({ workouts }: Props) {
                     borderRadius: 14,
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor: "#FF3B30",
+                    backgroundColor: fg,
                 },
                 text: {
                     color: "#FFFFFF",
@@ -55,7 +58,6 @@ export default function CalendarCard({ workouts }: Props) {
         <Calendar
             markingType="custom"
             markedDates={markedDates}
-            enableSwipeMonths
             hideExtraDays
             theme={{
                 backgroundColor: "transparent",

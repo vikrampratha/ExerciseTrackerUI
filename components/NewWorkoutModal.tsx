@@ -62,6 +62,8 @@ export default function NewWorkoutModal({
   const [exercises, setExercises] = useState<NewExercise[]>([]);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
 
+  const canSubmit = exercises.length > 0;
+
   const dateString = useMemo(() => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -97,9 +99,19 @@ export default function NewWorkoutModal({
               <View style={styles.headerCenter}>
                 <Text style={styles.headerTitle}>New Workout</Text>
               </View>
-
-              <Pressable onPress={handleConfirm} style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}>
-                <Ionicons name="checkmark" size={22} color="#FFFFFF" />
+              <Pressable
+                onPress={handleConfirm}
+                disabled={!canSubmit}
+                style={({ pressed }) => [
+                    styles.iconBtn,
+                    canSubmit && styles.iconBtnActive,
+                    pressed && canSubmit && styles.pressed,
+                ]}>
+                <Ionicons
+                    name="checkmark"
+                    size={22}
+                    color={canSubmit ? "#000000" : "#32D74B"}
+                />
               </Pressable>
             </View>
 
@@ -161,8 +173,8 @@ export default function NewWorkoutModal({
                       const selected = t === type;
                       const { bg, fg } = getWorkoutTypeColors(t);
 
-                      const chipBg = selected ? fg : bg;
-                      const chipText = selected ? "#FFFFFF" : fg;
+                      const chipBg = selected ? bg : fg;
+                      const chipText = selected ? "#FFFFFF" : "#000000";
                       const borderColor = selected ? fg : "rgba(255,255,255,0.08)";
 
                       return (
@@ -243,6 +255,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#1C1C1E",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.10)",
+  },
+  iconBtnActive: {
+    backgroundColor: "#32D74B",
+    borderWidth: 0,
   },
   headerCenter: { flex: 1, alignItems: "center" },
   headerTitle: { color: "#FFFFFF", fontSize: 16, fontWeight: "900", letterSpacing: 0.2 },

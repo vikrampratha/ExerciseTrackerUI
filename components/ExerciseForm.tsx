@@ -1,167 +1,334 @@
-import ExercisePicker from "@/components/ExercisePicker";
-import ExerciseSetsReps from "@/components/ExerciseSetsReps";
-import ExerciseWeight from "@/components/ExerciseWeight";
-import { api } from "@/services/api";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import ExerciseDuration from "./ExerciseDuration";
+import { Ionicons } from "@expo/vector-icons";
+import { nanoid } from "nanoid/non-secure";
+import React, { useMemo, useState } from "react";
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-type ExerciseType = 'STRENGTH' | 'WEIGHTED_STRENGTH' | 'CARDIO';
-
-type ExerciseName = {
-  id: number;
-  name: string;
-  type: ExerciseType;
-};
-
-type Exercise = {
-  id: string;
-  exerciseNameId: number
-  name: string;
-  type: ExerciseType;
-
-  sets?: number;
-  reps?: number;
-  weight?: number;
-  duration?: number;
-};
+import ExerciseSelectModal from "@/components/ExerciseSelectModal";
+import type { ExerciseName, ExerciseType, NewExercise } from "@/hooks/useExerciseNames";
+import { prettyExerciseName } from "@/utils/workoutStyles";
 
 type Props = {
-  onAdd: (exerciseName: ExerciseName, sets: number, reps: number, weight: number, duration: number) => void;
+  visible: boolean;
   onCancel: () => void;
+  onAdd: (exercise: NewExercise) => void;
 };
 
-export default function ExerciseForm({ onAdd, onCancel }: Props) {
-  const [exerciseNames, setExerciseNames] = useState<ExerciseName[]>([]);
-  const [selectedExercise, setSelectedExercise] = useState<ExerciseName | null>(null);
-  const exerciseType = selectedExercise?.type;
-  const [sets, setSets] = useState(1);
-  const [reps, setReps] = useState(10);
-  const [weight, setWeight] = useState(123.5);
-  const [duration, setDuration] = useState(30);
-  const [loading, setLoading] = useState(true);
+export default function ExerciseForm({ visible, onCancel, onAdd }: Props) {
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [selectedName, setSelectedName] = useState<ExerciseName | null>(null);
 
-  useEffect(() => {
-    fetchExerciseNames();
-  }, []);
+  const [sets, setSets] = useState("");
+  const [reps, setReps] = useState("");
+  const [weightLbs, setWeightLbs] = useState("");
+  const [durationMin, setDurationMin] = useState("");
 
-  const fetchExerciseNames = async () => {
-    try {
-      const response = await api.get<ExerciseName[]>('/exerciseNames');
-      setExerciseNames(response.data);
-      if (response.data.length > 0) {
-        setSelectedExercise(response.data[0]);
-      }
-    } catch (error) {
-      console.error('Failed to fetch exercise names:', error);
-    } finally {
-      setLoading(false);
-    }
+  const canAdd = useMemo(() => {
+    if (!selectedName) return false;
+    if (selectedName.type === "STRENGTH") return isPosInt(sets) && isPosInt(reps);
+    if (selectedName.type === "WEIGHTED_STRENGTH")
+      return isPosInt(sets) && isPosInt(reps) && isPosNumber(weightLbs);
+    if (selectedName.type === "CARDIO") return isPosInt(durationMin);
+    return false;
+  }, [selectedName, sets, reps, weightLbs, durationMin]);
+
+  const reset = () => {
+    setSelectedName(null);
+    setSets("");
+    setReps("");
+    setWeightLbs("");
+    setDurationMin("");
   };
-  
+
+  const handleCancel = () => {
+    Keyboard.dismiss();
+    reset();
+    onCancel();
+  };
+
   const handleAdd = () => {
-    if (!selectedExercise) return;
-    onAdd(selectedExercise, sets, reps, weight, duration);
+    if (!selectedName) return;
+
+    const clientId = nanoid();
+    let ex: NewExercise;
+
+    if (selectedName.type === "STRENGTH") {
+      ex = {
+        clientId,
+        exerciseNameId: selectedName.id,
+        name: selectedName.name,
+        type: "STRENGTH",
+        sets: parseInt(sets, 10),
+        reps: parseInt(reps, 10),
+      };
+    } else if (selectedName.type === "WEIGHTED_STRENGTH") {
+      ex = {
+        clientId,
+        exerciseNameId: selectedName.id,
+        name: selectedName.name,
+        type: "WEIGHTED_STRENGTH",
+        sets: parseInt(sets, 10),
+        reps: parseInt(reps, 10),
+        weight: parseFloat(weightLbs),
+      };
+    } else {
+      ex = {
+        clientId,
+        exerciseNameId: selectedName.id,
+        name: selectedName.name,
+        type: "CARDIO",
+        duration: parseInt(durationMin, 10),
+      };
+    }
+
+    Keyboard.dismiss();
+    onAdd(ex);
+    reset();
+    onCancel();
   };
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  if (!visible) return null;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.card}>
+      <Text style={styles.label}>EXERCISE</Text>
 
-      <ExercisePicker
-        data={exerciseNames}
-        selected={selectedExercise}
-        onSelect={setSelectedExercise}
-      />
+      <Pressable
+        onPress={() => setPickerOpen(true)}
+        style={({ pressed }) => [styles.selectRow, pressed && styles.pressed]}
+      >
+        <Ionicons name="fitness-outline" size={18} color="#E5E5EA" />
+        <Text style={styles.selectRowText} numberOfLines={1}>
+          {selectedName ? prettyExerciseName(selectedName.name) : "Select exercise…"}
+        </Text>
+        <Ionicons name="chevron-forward" size={18} color="#A1A1AA" />
+      </Pressable>
 
-      {exerciseType !== 'CARDIO' && (
-        <ExerciseSetsReps
+      <Text style={[styles.label, { marginTop: 12 }]}>DETAILS</Text>
+
+      <View style={styles.detailsRow}>
+        {!selectedName ? (
+          <Text style={styles.muted}>Choose an exercise to enter details.</Text>
+        ) : (
+          <DetailsInputs
+            type={selectedName.type}
             sets={sets}
             reps={reps}
-            onChangeSets={setSets}
-            onChangeReps={setReps}
-        />
-      )}
-
-      {exerciseType === 'WEIGHTED_STRENGTH' && (
-        <ExerciseWeight weight={weight} onChangeWeight={setWeight} maxWeight={500} />
-      )}
-
-      {exerciseType === 'CARDIO' && (
-        <ExerciseDuration minutes={duration} onChangeMinutes={setDuration} />
-      )}
-      
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
-          <Text style={styles.addText}>Add</Text>
-        </TouchableOpacity>
+            weightLbs={weightLbs}
+            durationMin={durationMin}
+            setSets={setSets}
+            setReps={setReps}
+            setWeightLbs={setWeightLbs}
+            setDurationMin={setDurationMin}
+          />
+        )}
       </View>
+
+      <View style={styles.actionsRow}>
+        <Pressable onPress={handleCancel} style={({ pressed }) => [styles.btnGhost, pressed && styles.pressed]}>
+          <Text style={styles.btnGhostText}>Cancel</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={handleAdd}
+          disabled={!canAdd}
+          style={({ pressed }) => [
+            styles.btnPrimary,
+            !canAdd && styles.btnDisabled,
+            pressed && canAdd && styles.pressed,
+          ]}
+        >
+          <Ionicons name="add" size={18} color={canAdd ? "#FFFFFF" : "#6B7280"} />
+          <Text style={[styles.btnPrimaryText, { color: canAdd ? "#FFFFFF" : "#6B7280" }]}>
+            Add
+          </Text>
+        </Pressable>
+      </View>
+
+      <ExerciseSelectModal
+        visible={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        selectedId={selectedName?.id ?? null}
+        onSelect={(en) => {
+          setSelectedName(en);
+          setSets("");
+          setReps("");
+          setWeightLbs("");
+          setDurationMin("");
+        }}
+      />
     </View>
   );
 }
 
+function DetailsInputs(props: {
+  type: ExerciseType;
+  sets: string;
+  reps: string;
+  weightLbs: string;
+  durationMin: string;
+  setSets: (v: string) => void;
+  setReps: (v: string) => void;
+  setWeightLbs: (v: string) => void;
+  setDurationMin: (v: string) => void;
+}) {
+  const base = {
+    placeholderTextColor: "#6B7280",
+    style: styles.input,
+    keyboardType: "number-pad" as const,
+    returnKeyType: "done" as const,
+    blurOnSubmit: true,
+    onSubmitEditing: Keyboard.dismiss,
+  };
+
+  if (props.type === "STRENGTH") {
+    return (
+      <>
+        <TextInput {...base} placeholder="Sets" value={props.sets} onChangeText={props.setSets} />
+        <TextInput {...base} placeholder="Reps" value={props.reps} onChangeText={props.setReps} />
+      </>
+    );
+  }
+
+  if (props.type === "WEIGHTED_STRENGTH") {
+    return (
+      <>
+        <TextInput {...base} placeholder="Sets" value={props.sets} onChangeText={props.setSets} />
+        <TextInput {...base} placeholder="Reps" value={props.reps} onChangeText={props.setReps} />
+        <TextInput
+          {...base}
+          placeholder="Weight (lb)"
+          value={props.weightLbs}
+          onChangeText={props.setWeightLbs}
+          keyboardType="decimal-pad"
+        />
+      </>
+    );
+  }
+
+  return (
+    <TextInput
+      {...base}
+      placeholder="Duration (min)"
+      value={props.durationMin}
+      onChangeText={props.setDurationMin}
+    />
+  );
+}
+
+function isPosInt(v: string) {
+  const n = Number(v);
+  return Number.isInteger(n) && n > 0;
+}
+function isPosNumber(v: string) {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0;
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  label: {
-    fontSize: 18,
-    marginLeft: 10,
-    color: '#fff',
-  },
-  pickerWrapper: {
+  card: {
+    backgroundColor: "#1C1C1E",
+    borderRadius: 18,
+    padding: 14,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 16,
-    overflow: 'hidden',
+    borderColor: "rgba(255,255,255,0.08)",
+    gap: 10,
   },
-  picker: {
-    height: 200,
+
+  label: {
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 1,
+    color: "#A1A1AA",
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
+
+  selectRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 14,
+    backgroundColor: "#2C2C2E",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
   },
-  cancelButton: {
+  selectRowText: {
     flex: 1,
-    marginRight: 8,
-    padding: 14,
-    borderRadius: 12,
-    backgroundColor: '#31363d',
-    alignItems: 'center',
+    color: "#FFFFFF",
+    fontWeight: "800",
+    fontSize: 14,
+    letterSpacing: 0.2,
   },
-  addButton: {
+
+  detailsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    alignItems: "center",
+  },
+
+  input: {
+    minWidth: 110,
+    flexGrow: 1,
+    backgroundColor: "#2C2C2E",
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    color: "#FFFFFF",
+    fontWeight: "800",
+  },
+
+  muted: {
+    color: "#A1A1AA",
+    fontWeight: "700",
+  },
+
+  actionsRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 6,
+  },
+
+  btnGhost: {
     flex: 1,
-    marginLeft: 8,
-    padding: 14,
-    borderRadius: 12,
-    backgroundColor: '#ffd33d',
-    alignItems: 'center',
+    borderRadius: 14,
+    paddingVertical: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#2C2C2E",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
   },
-  cancelText: {
-    fontWeight: '600',
-    color: '#fff'
+  btnGhostText: {
+    color: "#E5E5EA",
+    fontWeight: "900",
+    letterSpacing: 0.2,
   },
-  addText: {
-    color: '#31363d',
-    fontWeight: '600',
+
+  btnPrimary: {
+    flex: 1,
+    borderRadius: 14,
+    paddingVertical: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+    backgroundColor: "#111827",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+  },
+  btnPrimaryText: {
+    fontWeight: "900",
+    letterSpacing: 0.2,
+  },
+  btnDisabled: {
+    opacity: 0.6,
+  },
+
+  pressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
   },
 });

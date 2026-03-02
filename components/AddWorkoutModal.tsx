@@ -1,5 +1,4 @@
 import DatePicker from '@/components/DatePicker';
-import ExerciseList from '@/components/ExerciseList';
 import WorkoutTypePicker from '@/components/WorkoutTypePicker';
 import { postWorkout } from '@/services/api';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -53,7 +52,7 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
 
     const handleSubmitWorkout = async () => {
         if (exercises.length === 0) return;
-        
+
         const formattedDate = date.toLocaleDateString('en-CA');
 
         const mapExerciseToDTO = (exercise: Exercise) => ({
@@ -126,11 +125,11 @@ export default function AddWorkoutModal({ isVisible, onClose, onConfirm }: Props
             value={type}
             onChange={type => setType(type)}
         />
-        <ExerciseList
+        {/* <ExerciseList
             exercises={exercises}
             onAddExercise={handleAddExercise}
         >
-        </ExerciseList>
+        </ExerciseList> */}
       </View>
     </Modal>
   );

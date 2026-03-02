@@ -1,4 +1,4 @@
-import { api } from "@/services/api";
+import { api, Workout } from "@/services/api";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 
@@ -10,20 +10,6 @@ export type WorkoutType =
   | "LOWER_BODY"
   | "FULL_BODY"
   | "CARDIO";
-
-export type Exercise = {
-  name: string;
-  sets?: number;
-  reps?: number;
-  weight?: number;
-  duration?: number;
-}
-export type Workout = {
-  id: number;
-  date: string;
-  type: string;
-  exercises: Exercise[];
-};
 
 export type WorkoutFilterType = "ALL" | WorkoutType;
 

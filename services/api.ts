@@ -1,10 +1,19 @@
 import axios from 'axios';
 
-export interface Workout {
+export type Exercise = {
+  name: string;
+  type?: string;
+  sets?: number;
+  reps?: number;
+  weight?: number;
+  duration?: number;
+}
+
+export type Workout = {
   id: number;
   date: string;
   type: string;
-  //exercises: Exercise[];
+  exercises: Exercise[];
 };
 
 export const api = axios.create({

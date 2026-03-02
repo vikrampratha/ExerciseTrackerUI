@@ -1,24 +1,23 @@
+import { Exercise, Workout } from '@/services/api';
 import { getWorkoutTypeColors, prettyWorkoutType } from '@/utils/workoutStyles';
 import React, { useMemo } from 'react';
 import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
+function formatExerciseMeta(ex: Exercise) {
+  switch (ex.type) {
+    case "STRENGTH":
+      return `${ex.sets} × ${ex.reps}`;
+    case "WEIGHTED_STRENGTH":
+      return `${ex.sets} × ${ex.reps} • ${ex.weight} lb`;
+    case "CARDIO":
+      return `${ex.duration} min`;
+    default:
+      return "";
+  }
+}
+
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental?.(true);
-}
-
-interface Exercise {
-  name: string;
-  sets?: number;
-  reps?: number;
-  weight?: number;
-  duration?: number;
-}
-
-interface Workout {
-  id: number | string;
-  type: string;
-  date: string; // yyyy-mm-dd
-  exercises: Exercise[];
 }
 
 interface Props {
@@ -75,8 +74,13 @@ export default function WorkoutCard({ workout, expanded, onToggle }: Props) {
                   <View style={styles.numBadge}>
                     <Text style={styles.numText}>{idx + 1}</Text>
                   </View>
+
                   <Text style={styles.exerciseName} numberOfLines={2}>
                     {ex.name}
+                  </Text>
+
+                  <Text style={styles.exerciseMeta} numberOfLines={1}>
+                    {formatExerciseMeta(ex)}
                   </Text>
                 </View>
               ))}
@@ -192,6 +196,12 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "#E5E5EA",
     fontSize: 14,
+    fontWeight: "700",
+  },
+
+  exerciseMeta: {
+    color: "#A1A1AA",
+    fontSize: 13,
     fontWeight: "700",
   },
 });

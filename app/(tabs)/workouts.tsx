@@ -1,33 +1,18 @@
 import AddWorkoutModal from '@/components/AddWorkoutModal';
 import CircleButton from '@/components/CircleButton';
+import WorkoutCard from '@/components/WorkoutCard';
 import WorkoutFilterBar from '@/components/WorkoutFilterBar';
 import { useWorkouts } from '@/hooks/useWorkouts';
 import React, { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-interface Exercise {
-  name: string;
-  sets?: number;
-  reps?: number;
-  weight?: number;
-  duration?: number;
-}
-
-type Workout = {
-  id: number;
-  date: string;
-  type: string;
-  exercises: Exercise[];
-};
-
 export default function WorkoutsScreen() {
+  const { workouts, loading, error, types, selectedType, selectType } = useWorkouts();
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
-  const { workouts, loading, error, types, selectedType, selectType } = useWorkouts();
-
+  const data = useMemo(() => workouts, [workouts]);
 
   const toggleExpanded = useCallback((id: number) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -37,8 +22,6 @@ export default function WorkoutsScreen() {
   React.useEffect(() => {
     setExpandedId(null);
   }, [selectedType]);
-
-  const data = useMemo(() => workouts, [workouts]);
 
   const onAdd = () => {
     setIsModalVisible(true);
@@ -60,18 +43,34 @@ export default function WorkoutsScreen() {
           selectedType={selectedType}
           onSelect={selectType}
         />
-      {/* <FlatList
-        data={filteredWorkouts}
-        keyExtractor={(item: any) => item.id.toString()}
-        renderItem={({ item }) => 
-          <WorkoutCard 
-            workout={item} 
-            expanded={expandedId === item.id}
-            onToggle={() => toggleExpand(item.id)}
+      {loading ? (
+          <View style={styles.center}>
+            <ActivityIndicator />
+          </View>
+        ) : error ? (
+          <View style={styles.center}>
+            <Text style={styles.error}>{error}</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={data}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => {
+              const id = item.id;
+              const expanded = expandedId === id;
+
+              return (
+                <WorkoutCard
+                  workout={item}
+                  expanded={expanded}
+                  onToggle={() => toggleExpanded(id)}
+                />
+              );
+            }}
           />
-        }
-        contentContainerStyle={{ paddingBottom: 20 }}
-      /> */}
+        )}
       <View style={styles.fab}>
         <CircleButton onPress={onAdd} />
       </View>

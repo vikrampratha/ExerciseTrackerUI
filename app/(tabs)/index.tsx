@@ -1,8 +1,10 @@
 import CalendarCard from "@/components/CalendarCard";
 import ThisMonthCard from "@/components/ThisMonthCard";
 import ThisWeekCard from "@/components/ThisWeekCard";
+import { useAuth } from "@/contexts/AuthContext";
 import { useWorkouts } from "@/hooks/useWorkouts";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LastWorkoutCard from "../../components/LastWorkoutCard";
@@ -10,10 +12,16 @@ import LastWorkoutCard from "../../components/LastWorkoutCard";
 
 export default function Index() {
   const { workouts, lastWorkout, thisWeekSummary, thisMonthSummary, loading, error } = useWorkouts();
+  const { signOut } = useAuth();
 
   if (loading) return <ActivityIndicator />;
   if (error) return <Text>{error}</Text>;
 
+  const logout = async () => {
+    await signOut();
+    router.replace("/(auth)/login");
+  }
+  
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
       <View style={styles.headerRow}>
@@ -22,7 +30,7 @@ export default function Index() {
           <Text style={styles.title}>Workout Summary</Text>
         </View>
         <Pressable
-          onPress={() => {}}
+          onPress={logout}
           style={({ pressed }) => [
             styles.profileBtn,
             pressed && styles.pressed,

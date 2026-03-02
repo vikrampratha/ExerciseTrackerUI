@@ -130,8 +130,14 @@ export default function NewWorkoutModal({
                   <Text style={styles.sectionLabel}>DATE</Text>
 
                   <Pressable
-                    onPress={() => setShowPicker(true)}
-                    style={({ pressed }) => [styles.inputRow, pressed && styles.inputRowPressed]}
+                    onPress={() => {
+                        if (showExerciseForm) return;
+                        setShowPicker(true);
+                    }}
+                    style={({ pressed }) => [
+                        styles.inputRow,
+                        showExerciseForm && styles.inputRowDisabled,
+                        pressed && !showExerciseForm && styles.inputRowPressed]}
                   >
                     <Ionicons name="calendar-outline" size={18} color="#E5E5EA" />
                     <Text style={styles.inputText}>{dateString}</Text>
@@ -199,7 +205,10 @@ export default function NewWorkoutModal({
                 {/* Middle: + Exercise button OR ExerciseForm */}
                 {!showExerciseForm ? (
                   <Pressable
-                    onPress={() => setShowExerciseForm(true)}
+                    onPress={() => {
+                        setShowPicker(false);
+                        setShowExerciseForm(true);
+                    }}
                     style={({ pressed }) => [styles.addExerciseBig, pressed && styles.pressed]}
                   >
                     <Ionicons name="add" size={18} color="#FFFFFF" />
@@ -297,6 +306,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#2C2C2E",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
+    alignItems: "center"
   },
   doneBtn: { alignSelf: "flex-end", paddingHorizontal: 14, paddingVertical: 10 },
   doneBtnText: { color: "#FFFFFF", fontWeight: "900", fontSize: 14 },
@@ -322,5 +332,8 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: 0.2,
     fontSize: 14,
+  },
+  inputRowDisabled: {
+    opacity: 0.55,
   },
 });

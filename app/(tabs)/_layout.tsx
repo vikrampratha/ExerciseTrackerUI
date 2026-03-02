@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 
+import { WorkoutsProvider } from '@/contexts/WorkoutsContext';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Platform } from 'react-native';
@@ -7,6 +8,7 @@ import { Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
+    <WorkoutsProvider>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -60,5 +62,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </WorkoutsProvider>
   );
 }

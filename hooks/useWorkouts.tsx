@@ -1,6 +1,5 @@
-import { api, postWorkout, Workout, WorkoutDTO } from "@/services/api";
-import { nanoid } from "nanoid/non-secure";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useWorkoutsStore } from "@/contexts/WorkoutsContext";
+import { useCallback, useMemo, useState } from "react";
 
 export type WorkoutType =
   | "PUSH"
@@ -14,9 +13,8 @@ export type WorkoutType =
 export type WorkoutFilterType = "ALL" | WorkoutType;
 
 export function useWorkouts() {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { workoutsRaw, loading, error, refetch, createWorkout } = useWorkoutsStore();
+
   const [selectedType, setSelectedType] = useState<WorkoutFilterType>("ALL");
 
   const types: WorkoutFilterType[] = useMemo(
@@ -24,62 +22,10 @@ export function useWorkouts() {
     []
   );
 
-  const refetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await api.get<Workout[]>("/getAllWorkouts");
-      setWorkouts(res.data);
-    } catch (e) {
-      console.error(e);
-      setError("Failed to load workouts");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
-
-  const createWorkout = useCallback(
-    async (dto: WorkoutDTO) => {
-       // initial optimistic insert
-      const tempId = `temp-${nanoid()}`;
-      const optimistic: Workout = { ...dto, id: tempId, isOptimistic: true };
-      setWorkouts((prev) => [optimistic, ...prev]);
-
-      try {
-        await postWorkout(dto);
-        await refetch();
-        return { ok: true as const };
-      } catch (e) {
-        console.error(e);
-        // rollback optimistic item
-        setWorkouts((prev) => prev.filter((w) => w.id !== tempId));
-        return { ok: false as const, message: "Failed to save workout" };
-      }
-    },[refetch]
-  );
-
-
-  const addWorkoutOptimistic = useCallback((dto: WorkoutDTO) => {
-    const optimistic: Workout = {
-      ...dto,
-      id: `temp-${nanoid()}`,
-      isOptimistic: true,
-    };
-    setWorkouts((prev) => [optimistic, ...prev]);
-  }, []);
-
-  const removeWorkoutById = useCallback((id: string | number) => {
-    setWorkouts((prev) => prev.filter((w) => w.id !== id));
-  }, []);
-
   const filteredWorkouts = useMemo(() => {
-    if (selectedType === "ALL") return workouts;
-    return workouts.filter((w) => w.type === selectedType);
-  }, [workouts, selectedType]);
+    if (selectedType === "ALL") return workoutsRaw;
+    return workoutsRaw.filter((w) => w.type === selectedType);
+  }, [workoutsRaw, selectedType]);
 
   const sortedWorkouts = useMemo(() => {
     return [...filteredWorkouts].sort((a, b) => {
@@ -89,70 +35,52 @@ export function useWorkouts() {
     });
   }, [filteredWorkouts]);
 
-  const selectType = useCallback((t: WorkoutFilterType) => {
-    setSelectedType(t);
-  }, []);
+  const selectType = useCallback((t: WorkoutFilterType) => setSelectedType(t), []);
 
   const lastWorkout = useMemo(() => {
-    if (workouts.length === 0) return null;
-    return workouts.reduce((latest, current) =>
-      new Date(current.date) > new Date(latest.date)
-        ? current
-        : latest
-    );
-  }, [workouts]);
+    if (workoutsRaw.length === 0) return null;
+    return workoutsRaw.reduce((latest, current) => {
+      const a = new Date(current.date + "T00:00:00").getTime();
+      const b = new Date(latest.date + "T00:00:00").getTime();
+      return a > b ? current : latest;
+    });
+  }, [workoutsRaw]);
 
   const thisWeekSummary = useMemo(() => {
     const now = new Date();
-
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
     const grouped: Record<string, number> = {};
+    workoutsRaw.forEach((w) => {
+      const d = new Date(w.date + "T00:00:00");
+      if (d >= startOfWeek) grouped[w.type] = (grouped[w.type] || 0) + 1;
+    });
+    return grouped;
+  }, [workoutsRaw]);
 
-    workouts.forEach(workout => {
-        // Force local parsing
-        const workoutDate = new Date(workout.date + "T00:00:00");
-        if (workoutDate >= startOfWeek) {
-            const type = workout.type.toUpperCase();
-            grouped[type] = (grouped[type] || 0) + 1;
-        }
+  const thisMonthSummary = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    const workoutsThisMonth = workoutsRaw.filter((w) => {
+      const d = new Date(w.date + "T00:00:00");
+      return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
     });
 
-    return grouped;
-  }, [workouts]);
+    const monthlyCount = workoutsThisMonth.length;
+    const dayOfMonth = now.getDate();
+    const weeksElapsed = Math.ceil(dayOfMonth / 7);
+    const avgPerWeek = weeksElapsed > 0 ? +(monthlyCount / weeksElapsed).toFixed(1) : 0;
 
-const thisMonthSummary = useMemo(() => {
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-
-  const workoutsThisMonth = workouts.filter(workout => {
-    const date = new Date(workout.date + "T00:00:00");
-    return (
-      date.getFullYear() === currentYear &&
-      date.getMonth() === currentMonth
-    );
-  });
-
-  const monthlyCount = workoutsThisMonth.length;
-  const dayOfMonth = now.getDate();
-  const weeksElapsed = Math.ceil(dayOfMonth / 7);
-
-  const avgPerWeek =
-    weeksElapsed > 0
-      ? +(monthlyCount / weeksElapsed).toFixed(1)
-      : 0;
+    return { monthlyCount, avgPerWeek };
+  }, [workoutsRaw]);
 
   return {
-    monthlyCount,
-    avgPerWeek,
-  };
-}, [workouts]);
-
-  return {
-    workouts: sortedWorkouts,
+    workouts: sortedWorkouts,          
+    workoutsRaw,                       
     lastWorkout,
     lastWorkoutDate: lastWorkout?.date ?? null,
     thisWeekSummary,
@@ -160,11 +88,9 @@ const thisMonthSummary = useMemo(() => {
     loading,
     error,
     refetch,
-    addWorkoutOptimistic,
-    removeWorkoutById,
+    createWorkout,                     
     types,
     selectedType,
     selectType,
-    createWorkout
   };
 }

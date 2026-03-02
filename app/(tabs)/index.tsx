@@ -9,7 +9,7 @@ import LastWorkoutCard from "../../components/LastWorkoutCard";
 
 
 export default function Index() {
-  const { workouts, lastWorkout, lastWorkoutDate, thisWeekSummary, thisMonthSummary, loading, error } = useWorkouts();
+  const { workouts, lastWorkout, thisWeekSummary, thisMonthSummary, loading, error } = useWorkouts();
 
   if (loading) return <ActivityIndicator />;
   if (error) return <Text>{error}</Text>;

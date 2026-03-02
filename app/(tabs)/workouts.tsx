@@ -9,7 +9,7 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from '
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function WorkoutsScreen() {
-  const { workouts, loading, error, types, selectedType, selectType, addWorkoutOptimistic, createWorkout } = useWorkouts();
+  const { workouts, loading, error, refetch, types, selectedType, selectType, createWorkout } = useWorkouts();
   const [expandedId, setExpandedId] = useState<string | number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);

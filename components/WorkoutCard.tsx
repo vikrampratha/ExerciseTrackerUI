@@ -1,5 +1,5 @@
 import { Exercise, Workout } from '@/services/api';
-import { getWorkoutTypeColors, prettyWorkoutType } from '@/utils/workoutStyles';
+import { getWorkoutTypeColors, prettyExerciseName, prettyWorkoutType } from '@/utils/workoutStyles';
 import React, { useMemo } from 'react';
 import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 
@@ -75,8 +75,8 @@ export default function WorkoutCard({ workout, expanded, onToggle }: Props) {
                     <Text style={styles.numText}>{idx + 1}</Text>
                   </View>
 
-                  <Text style={styles.exerciseName} numberOfLines={2}>
-                    {ex.name}
+                  <Text style={styles.exerciseName} numberOfLines={1}>
+                    {prettyExerciseName(ex.name)}
                   </Text>
 
                   <Text style={styles.exerciseMeta} numberOfLines={1}>

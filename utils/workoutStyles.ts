@@ -10,6 +10,19 @@ export function prettyWorkoutType(type: string) {
     .join(" ");
 }
 
+export function prettyExerciseName(name: string) {
+  if (!name) return "";
+
+  return name
+    .toLowerCase()
+    .split("_")
+    .map((word) => {
+      if (word.length <= 2) return word.toUpperCase(); // e.g. Db -> DB
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
 export function getWorkoutTypeColors(type: string) {
   const normalized = (type ?? "").toUpperCase();
 

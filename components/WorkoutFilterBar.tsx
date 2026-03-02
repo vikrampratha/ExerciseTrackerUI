@@ -23,18 +23,29 @@ export default function WorkoutFilterBar({ types, selectedType, onSelect }: Prop
         {types.map((t) => {
           const isSelected = selectedType === t;
 
-          // "ALL" gets a neutral style; other types use palette
-          const palette =
-            t === "ALL" ? { bg: "#2C2C2E", fg: "#FFFFFF" } : getWorkoutTypeColors(t as WorkoutType);
+          if (t === "ALL") {
+            return (
+              <TouchableOpacity
+                key={t}
+                onPress={() => onSelect(t)}
+                activeOpacity={0.85}
+                style={[
+                  styles.chip,
+                  isSelected ? styles.allSelected : styles.allUnselected,
+                  {borderColor: "#E5E5EA"}
+                ]}
+              >
+                <Text style={[styles.chipText, { color: isSelected ? "#E5E5EA": "#000000" }]}>
+                  All
+                </Text>
+              </TouchableOpacity>
+            );
+          }
 
-          const backgroundColor = isSelected ? palette.fg : "#2C2C2E";
-          const borderColor = isSelected ? palette.fg : "#3A3A3C";
-          const textColor = isSelected ? "#000000" : "#E5E5EA";
-
-          // For ALL selected, invert a bit so it reads well
-          const allSelectedTextColor = "#FFFFFF";
-
-          const labelText = t === "ALL" ? "All" : prettyWorkoutType(t);
+          const { bg, fg } = getWorkoutTypeColors(t as WorkoutType);
+          const backgroundColor = isSelected ? bg : fg;
+          const textColor = isSelected ? fg: "#000000";
+          const borderColor = isSelected ? fg : "rgba(255,255,255,0.08)";
 
           return (
             <TouchableOpacity
@@ -43,13 +54,8 @@ export default function WorkoutFilterBar({ types, selectedType, onSelect }: Prop
               activeOpacity={0.85}
               style={[styles.chip, { backgroundColor, borderColor }]}
             >
-              <Text
-                style={[
-                  styles.chipText,
-                  { color: t === "ALL" ? (isSelected ? allSelectedTextColor : "#E5E5EA") : textColor },
-                ]}
-              >
-                {labelText}
+              <Text style={[styles.chipText, { color: textColor }]}>
+                {prettyWorkoutType(t)}
               </Text>
             </TouchableOpacity>
           );
@@ -93,5 +99,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 12,
     color: "#A1A1AA",
+  },
+  allSelected: {
+    backgroundColor: "#2C2C2E",
+    borderColor: "rgba(255,255,255,0.10)",
+  },
+  allUnselected: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#FFFFFF",
   },
 });

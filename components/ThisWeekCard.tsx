@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1C1C1E",
     borderRadius: 24,
     padding: 20,
-    marginRight: 10,
+    //marginRight: 10,
     shadowColor: "#000",
     shadowOpacity: 0.35,
     shadowRadius: 14,

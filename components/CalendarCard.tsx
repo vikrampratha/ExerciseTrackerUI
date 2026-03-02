@@ -63,14 +63,14 @@ export default function CalendarCard({ workouts }: Props) {
                 backgroundColor: "transparent",
                 calendarBackground: "transparent",
 
-                textMonthFontSize: 15,
-                textMonthFontWeight: "700",
+                textMonthFontSize: 20,
+                // textMonthFontWeight: "700",
 
-                textDayFontSize: 12,
-                textDayFontWeight: "600",
+                // textDayFontSize: 12,
+                // textDayFontWeight: "600",
 
-                textDayHeaderFontSize: 10,
-                textDayHeaderFontWeight: "600",
+                // textDayHeaderFontSize: 10,
+                // textDayHeaderFontWeight: "600",
 
                 monthTextColor: "#FFFFFF",
                 dayTextColor: "#FFFFFF",
@@ -78,32 +78,6 @@ export default function CalendarCard({ workouts }: Props) {
                 textDisabledColor: "#52525B",
                 todayTextColor: "#FF3B30",
                 arrowColor: "#FFFFFF",
-
-                "stylesheet.day.basic": {
-                    base: {
-                        width: 30,
-                        height: 30,
-                        alignItems: "center",
-                        justifyContent: "center",
-                    },
-                    text: {
-                        marginTop: 0,
-                        fontSize: 12,
-                        fontWeight: "600",
-                        color: "#FFFFFF",
-                    },
-                    today: {
-                        borderRadius: 15,
-                    },
-                },
-
-                "stylesheet.calendar.header": {
-                    week: {
-                        marginTop: 4,
-                        flexDirection: "row",
-                        justifyContent: "space-around",
-                    },
-                },
             } as any}
 
             style={{ paddingTop: 0, paddingBottom: 0 }}

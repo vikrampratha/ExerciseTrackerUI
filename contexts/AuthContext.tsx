@@ -1,5 +1,5 @@
 import { login, setAuthToken } from "@/services/auth";
-import * as SecureStore from "expo-secure-store";
+import { deleteToken, getToken, setToken } from "@/services/tokenStorage";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const TOKEN_KEY = "auth_token";
@@ -14,14 +14,14 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setTokenState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const stored = await SecureStore.getItemAsync(TOKEN_KEY);
-        setToken(stored ?? null);
+        const stored = await getToken();
+        setTokenState(stored ?? null);
         setAuthToken(stored ?? null);
       } finally {
         setLoading(false);
@@ -31,11 +31,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (username: string, password: string) => {
     try {
-      const data = await login(username.trim(), password);
-      await SecureStore.setItemAsync(TOKEN_KEY, data.token);
+      const { token } = await login(username.trim(), password);
+      await setToken(token);
 
-      setToken(data.token);
-      setAuthToken(data.token);
+      setTokenState(token);
+      setAuthToken(token);
 
       return { ok: true as const };
     } catch (e: any) {
@@ -49,8 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
-    setToken(null);
+    await deleteToken();
+    setTokenState(null);
     setAuthToken(null);
   };
 

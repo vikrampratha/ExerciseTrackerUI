@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { nanoid } from "nanoid/non-secure";
 import React, { useMemo, useState } from "react";
-import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, TextInputProps, View } from "react-native";
 
 import ExerciseSelectModal from "@/components/ExerciseSelectModal";
 import type { ExerciseName, ExerciseType, NewExercise } from "@/hooks/useExerciseNames";
@@ -160,6 +160,57 @@ export default function ExerciseForm({ visible, onCancel, onAdd }: Props) {
   );
 }
 
+function NumericTextInput(props: TextInputProps) {
+  if (Platform.OS !== "web") {
+    // iOS/Android: identical behavior + appearance
+    return <TextInput {...props} />;
+  }
+
+  // Web: RN TextInput inside Modal/overlays can be non-typeable depending on layering.
+  // Use a real input while preserving styling & controlled value.
+  const {
+    value,
+    onChangeText,
+    placeholder,
+    style,
+    keyboardType,
+    ...rest
+  } = props;
+
+  const inputMode =
+    keyboardType === "decimal-pad" ? "decimal" : "numeric";
+
+  // @ts-ignore - web-only element
+  return (
+    <input
+      value={(value ?? "") as string}
+      placeholder={placeholder as string | undefined}
+      inputMode={inputMode}
+      onChange={(e) => onChangeText?.(e.currentTarget.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          (e.currentTarget as HTMLInputElement).blur();
+          Keyboard.dismiss();
+          // @ts-ignore
+          rest.onSubmitEditing?.(e);
+        }
+      }}
+      style={{
+        background: (style as any)?.backgroundColor ?? "#2C2C2E",
+        borderRadius: (style as any)?.borderRadius ?? 14,
+        border: `1px solid ${(style as any)?.borderColor ?? "rgba(255,255,255,0.08)"}`,
+        padding: "10px 12px",
+        color: (style as any)?.color ?? "#FFFFFF",
+        fontWeight: (style as any)?.fontWeight ?? 800,
+        minWidth: (style as any)?.minWidth ?? 110,
+        flexGrow: (style as any)?.flexGrow ?? 1,
+        outline: "none",
+        fontSize: 16,
+      }}
+    />
+  );
+}
+
 function DetailsInputs(props: {
   type: ExerciseType;
   sets: string;
@@ -183,8 +234,8 @@ function DetailsInputs(props: {
   if (props.type === "STRENGTH") {
     return (
       <>
-        <TextInput {...base} placeholder="Sets" value={props.sets} onChangeText={props.setSets} />
-        <TextInput {...base} placeholder="Reps" value={props.reps} onChangeText={props.setReps} />
+        <NumericTextInput {...base} placeholder="Sets" value={props.sets} onChangeText={props.setSets} />
+        <NumericTextInput {...base} placeholder="Reps" value={props.reps} onChangeText={props.setReps} />
       </>
     );
   }
@@ -192,9 +243,9 @@ function DetailsInputs(props: {
   if (props.type === "WEIGHTED_STRENGTH") {
     return (
       <>
-        <TextInput {...base} placeholder="Sets" value={props.sets} onChangeText={props.setSets} />
-        <TextInput {...base} placeholder="Reps" value={props.reps} onChangeText={props.setReps} />
-        <TextInput
+        <NumericTextInput {...base} placeholder="Sets" value={props.sets} onChangeText={props.setSets} />
+        <NumericTextInput {...base} placeholder="Reps" value={props.reps} onChangeText={props.setReps} />
+        <NumericTextInput
           {...base}
           placeholder="Weight (lb)"
           value={props.weightLbs}
@@ -206,7 +257,7 @@ function DetailsInputs(props: {
   }
 
   return (
-    <TextInput
+    <NumericTextInput
       {...base}
       placeholder="Duration (min)"
       value={props.durationMin}

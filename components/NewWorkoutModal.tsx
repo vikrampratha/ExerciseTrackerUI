@@ -6,16 +6,16 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useMemo, useState } from "react";
 import {
-    Keyboard,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getWorkoutTypeColors, prettyWorkoutType } from "../utils/workoutStyles";
@@ -64,6 +64,12 @@ export default function NewWorkoutModal({
   const [showExerciseForm, setShowExerciseForm] = useState(false);
 
   const canSubmit = exercises.length > 0;
+
+  const today = useMemo(() => {
+    const t = new Date();
+    t.setHours(0, 0, 0, 0);
+    return t;
+  }, []);
 
   const dateString = useMemo(() => {
     const y = date.getFullYear();
@@ -131,7 +137,10 @@ export default function NewWorkoutModal({
                 {/* Date Section */}
                 <View style={styles.section}>
                   <Text style={styles.sectionLabel}>DATE</Text>
-
+                  {Platform.OS === "web" ? (
+                    <WebDatePickerRow value={date} onChange={setDate} maximumDate={today} />
+                  ) : (
+                  <>
                   <Pressable
                     onPress={() => {
                         if (showExerciseForm) return;
@@ -171,6 +180,7 @@ export default function NewWorkoutModal({
                       ) : null}
                     </View>
                   ) : null}
+                  </> )}
                 </View>
 
                 {/* Type Section */}
@@ -241,6 +251,60 @@ export default function NewWorkoutModal({
         </TouchableWithoutFeedback>
       </View>
     </Modal>
+  );
+}
+
+function toYMD(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function fromYMD(s: string) {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function WebDatePickerRow({
+  value,
+  onChange,
+  maximumDate,
+}: {
+  value: Date;
+  onChange: (d: Date) => void;
+  maximumDate: Date;
+}) {
+  const ymd = toYMD(value);
+  const max = toYMD(maximumDate);
+
+  return (
+    <View style={styles.inputRow}>
+      <Ionicons name="calendar-outline" size={18} color="#E5E5EA" />
+      <Text style={styles.inputText}>{ymd}</Text>
+
+      {/* Native browser date picker */}
+      <input
+        type="date"
+        value={ymd}
+        max={max}
+        onChange={(e) => {
+          const v = e.currentTarget.value;
+          if (!v) return;
+          onChange(fromYMD(v))
+        }}
+        style={{
+          marginLeft: "auto",
+          background: "#1C1C1E",
+          color: "#FFFFFF",
+          border: "1px solid rgba(255,255,255,0.10)",
+          borderRadius: 999,
+          padding: "8px 12px",
+          fontWeight: 900,
+          outline: "none",
+        }}
+      />
+    </View>
   );
 }
 

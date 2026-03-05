@@ -51,6 +51,8 @@ export function toWorkoutDTO(payload: {
 
 export const api = axios.create({
   baseURL: '/api', // production value, same-origin via nginx reverse proxy
+  //baseURL: 'http://192.168.1.151:8080',
+  //baseURL: 'http://localhost:8080',
   headers: {
     'Content-Type': 'application/json',
   },
